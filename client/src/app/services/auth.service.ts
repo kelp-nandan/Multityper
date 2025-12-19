@@ -50,15 +50,21 @@ export class AuthService {
       return true;
     }
 
-    // Check if user is authenticated
+    // Check if user is authenticated with timeout
     try {
-      const response = await this.httpService.getUserProfile().toPromise();
+      const response = await Promise.race([
+        this.httpService.getUserProfile().toPromise(),
+        new Promise<AuthResponse>((_, reject) =>
+          setTimeout(() => reject(new Error('Profile check timeout')), 2000)
+        )
+      ]) as AuthResponse;
+
       if (response?.data?.user) {
         this.currentUser.set(response.data.user);
         return true;
       }
     } catch (error) {
-      // Clear user state on auth failure
+      // Clear user state on auth failure or timeout
       this.currentUser.set(null);
     }
 

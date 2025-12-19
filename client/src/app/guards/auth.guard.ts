@@ -7,13 +7,23 @@ export const authGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
 
   const isAuthenticated = await authService.waitForAuthCheck();
+  const requiresAuth = route.data?.['requiresAuth'] !== false; // Default to true
 
-  if (isAuthenticated) {
-    return true;
+  if (requiresAuth) {
+    // Protected route - requires authentication
+    if (isAuthenticated) {
+      return true;
+    }
+    router.navigate(['/login'], {
+      queryParams: { returnUrl: state.url },
+    });
+    return false;
+  } else {
+    // Guest route - requires NO authentication
+    if (!isAuthenticated) {
+      return true;
+    }
+    router.navigate(['/homepage']);
+    return false;
   }
-
-  router.navigate(['/login'], {
-    queryParams: { returnUrl: state.url },
-  });
-  return false;
 };

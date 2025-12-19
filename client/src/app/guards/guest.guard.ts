@@ -3,15 +3,15 @@ import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 export const guestGuard: CanActivateFn = async (route, state) => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-    const isAuthenticated = await authService.waitForAuthCheck();
+  const isAuthenticated = await authService.waitForAuthCheck();
 
-    if (isAuthenticated) {
-        router.navigate(['/homepage']);
-        return false;
-    }
+  if (isAuthenticated) {
+    router.navigate(['/homepage']);
+    return false;
+  }
 
-    return true;
+  return true;
 };

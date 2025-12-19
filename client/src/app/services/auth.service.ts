@@ -1,10 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { Observable, Subscription, interval } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { HttpService } from './http.service';
 
 interface User {
   id: number;
@@ -13,7 +12,6 @@ interface User {
 }
 
 interface AuthResponse {
-  success: boolean;
   message: string;
   data: {
     user?: User;
@@ -23,21 +21,20 @@ interface AuthResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/users`;
   currentUser = signal<User | null>(null);
-  isAuthenticated = signal<boolean>(false);
   private platformId = inject(PLATFORM_ID);
   private isBrowser: boolean;
   private tokenCheckSubscription?: Subscription;
-  private authCheckCompleted = false;
-  private authCheckPromise?: Promise<void>;
+
+  // Computed signal to derive authentication state
+  isAuthenticated = computed(() => this.currentUser() !== null);
 
   constructor(
-    private http: HttpClient,
-    private router: Router
+    private httpService: HttpService,
+    private router: Router,
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     if (this.isBrowser) {
@@ -46,103 +43,66 @@ export class AuthService {
   }
 
   async waitForAuthCheck(): Promise<boolean> {
-    if (!this.isBrowser) {
-      return false;
+    if (!this.isBrowser) return false;
+
+    // If we already have user data, return true immediately
+    if (this.currentUser() !== null) {
+      return true;
     }
 
-    if (this.authCheckCompleted) {
-      return this.isAuthenticated();
+    // Check if user is authenticated
+    try {
+      const response = await this.httpService.getUserProfile().toPromise();
+      if (response?.data?.user) {
+        this.currentUser.set(response.data.user);
+        return true;
+      }
+    } catch (error) {
+      // Clear user state on auth failure
+      this.currentUser.set(null);
     }
 
-    if (this.authCheckPromise) {
-      await this.authCheckPromise;
-      return this.isAuthenticated();
-    }
-
-    this.authCheckPromise = this.loadUserFromStorage();
-    await this.authCheckPromise;
-    this.authCheckCompleted = true;
-    return this.isAuthenticated();
+    return false;
   }
 
-  private loadUserFromStorage(): Promise<void> {
-    if (!this.isBrowser) return Promise.resolve();
-
-    return new Promise((resolve) => {
-      this.getUserProfile().subscribe({
-        next: (response) => {
-          if (response.success && response.data.user) {
-            this.currentUser.set(response.data.user);
-            this.isAuthenticated.set(true);
-          } else {
-            this.currentUser.set(null);
-            this.isAuthenticated.set(false);
-          }
-          resolve();
-        },
-        error: () => {
-          this.currentUser.set(null);
-          this.isAuthenticated.set(false);
-          resolve();
-        }
-      });
-    });
-  }
-
-  private hashPassword(password: string): string {
-    // Apply SHA-256 hashing to match backend expectation
+  private encryptPassword(password: string): string {
+    // Hash password using SHA-256
     return CryptoJS.SHA256(password).toString();
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    // Hash password on client-side to prevent plain text transmission
-    const hashedPassword = this.hashPassword(password);
-    return this.http.post<AuthResponse>(
-      `${this.apiUrl}/login`,
-      { email, password: hashedPassword },
-      { withCredentials: true }
-    );
+    // Hash password client-side
+    const hashedPassword = this.encryptPassword(password);
+    return this.httpService.login({ email, password: hashedPassword });
   }
 
   register(userData: any): Observable<AuthResponse> {
-    // Hash password on client-side to prevent plain text transmission
-    const hashedPassword = this.hashPassword(userData.password);
-    return this.http.post<AuthResponse>(
-      `${this.apiUrl}/register`,
-      { ...userData, password: hashedPassword },
-      { withCredentials: true }
-    );
+    // Hash password client-side
+    const hashedPassword = this.encryptPassword(userData.password);
+    return this.httpService.register({
+      ...userData,
+      password: hashedPassword,
+    });
   }
 
   setUserData(user: User) {
     this.currentUser.set(user);
-    this.isAuthenticated.set(true);
   }
 
   getUserProfile(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(
-      `${this.apiUrl}/profile`,
-      { withCredentials: true }
-    );
+    return this.httpService.getUserProfile();
   }
 
   async logout() {
     if (!this.isBrowser) return;
 
     try {
-      await this.http.post(
-        `${this.apiUrl}/logout`,
-        {},
-        { withCredentials: true }
-      ).toPromise();
+      await this.httpService.logout().toPromise();
     } catch (error) {
       // Logout failed but continue with local cleanup
     }
 
     this.currentUser.set(null);
-    this.isAuthenticated.set(false);
-    this.authCheckCompleted = false;
-    this.authCheckPromise = undefined;
     this.tokenCheckSubscription?.unsubscribe();
     this.router.navigate(['/login']);
   }
@@ -162,14 +122,19 @@ export class AuthService {
     if (!this.isBrowser) return false;
 
     try {
-      const response = await this.http.post<AuthResponse>(
-        `${this.apiUrl}/refresh`,
-        {},
-        { withCredentials: true }
-      ).toPromise();
+      const response = await this.httpService.refreshToken().toPromise();
+      // If we reach here, refresh was successful (200 status)
+      return true;
+    } catch (error: any) {
+      // Simplified refresh token error handling
+      const status = error.status;
 
-      return response?.success || false;
-    } catch (error) {
+      if (status === 401 || status === 403) {
+        // Refresh token expired or invalid - user needs to re-authenticate
+      } else if (status >= 500 || status === 0) {
+        // Server or network error during refresh - will retry later
+      }
+
       return false;
     }
   }

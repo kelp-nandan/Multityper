@@ -10,7 +10,9 @@ module.exports = {
         name VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_by INTEGER REFERENCES users(id),
+        updated_by INTEGER REFERENCES users(id)
       );
     `);
 
@@ -39,6 +41,8 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`DROP TABLE IF EXISTS users CASCADE;`);
-    await queryInterface.sequelize.query(`DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;`);
-  }
+    await queryInterface.sequelize.query(
+      `DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;`,
+    );
+  },
 };

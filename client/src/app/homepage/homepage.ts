@@ -10,14 +10,12 @@ interface User {
   createdAt?: string;
 }
 
-
 @Component({
   selector: 'app-homepage',
   imports: [CommonModule],
   templateUrl: './homepage.html',
   styleUrls: ['./homepage.css'],
 })
-
 export class Homepage implements OnInit {
   user = signal<User | null>(null);
   showDetails = signal(false);
@@ -25,21 +23,19 @@ export class Homepage implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.user.set(this.authService.currentUser());
   }
-
 
   toggleDetails() {
     this.showDetails.set(!this.showDetails());
   }
 
   onLogout() {
-    if (confirm('Are you sure you want to logout?'))
-      this.authService.logout();
+    if (confirm('Are you sure you want to logout?')) this.authService.logout();
   }
 
   formatDate(date?: string): string {
@@ -47,5 +43,4 @@ export class Homepage implements OnInit {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
-
 }

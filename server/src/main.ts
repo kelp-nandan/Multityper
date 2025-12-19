@@ -9,20 +9,21 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   app.enableCors({
     origin: ENV.CORS_ORIGIN,
     credentials: true,
   });
 
-
   await app.listen(ENV.PORT);
 
-  console.log(`Server is running on http://localhost:${ENV.PORT}`);
+  // Server startup completed
 }
 bootstrap();

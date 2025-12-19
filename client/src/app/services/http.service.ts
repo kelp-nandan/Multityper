@@ -2,66 +2,35 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../config/api-endpoints';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-interface AuthResponse {
-  message: string;
-  data: {
-    user?: User;
-    accessToken?: string;
-    refreshToken?: string;
-  };
-}
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
+import { IUser, IAuthResponse, ILoginRequest, IRegisterRequest } from '../interfaces/auth.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // Authentication HTTP calls
-  login(loginData: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, loginData, {
-      withCredentials: true,
-    });
+  login(loginData: ILoginRequest): Observable<IAuthResponse> {
+    return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.LOGIN, loginData);
   }
 
-  register(registerData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, registerData, {
-      withCredentials: true,
-    });
+  register(registerData: IRegisterRequest): Observable<IAuthResponse> {
+    return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.REGISTER, registerData);
   }
 
-  getUserProfile(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(API_ENDPOINTS.AUTH.PROFILE, { withCredentials: true });
+  getUserProfile(): Observable<IAuthResponse> {
+    return this.http.get<IAuthResponse>(API_ENDPOINTS.AUTH.PROFILE);
   }
 
   logout(): Observable<any> {
-    return this.http.post(API_ENDPOINTS.AUTH.LOGOUT, {}, { withCredentials: true });
+    return this.http.post(API_ENDPOINTS.AUTH.LOGOUT, {});
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH, {}, { withCredentials: true });
+  refreshToken(): Observable<IAuthResponse> {
+    return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.REFRESH, {});
   }
 
-  // User management (admin)
   getUsers(): Observable<any> {
-    return this.http.get(API_ENDPOINTS.AUTH.LIST_USERS, { withCredentials: true });
+    return this.http.get(API_ENDPOINTS.AUTH.LIST_USERS);
   }
 }

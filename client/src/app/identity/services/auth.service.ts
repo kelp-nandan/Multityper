@@ -3,28 +3,14 @@ import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { Observable, Subscription, interval } from 'rxjs';
-import { HttpService } from './http.service';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-interface AuthResponse {
-  message: string;
-  data: {
-    user?: User;
-    accessToken?: string;
-    refreshToken?: string;
-  };
-}
+import { HttpService } from '../../services/http.service';
+import { IUser, IAuthResponse } from '../../interfaces/auth.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  currentUser = signal<User | null>(null);
+  currentUser = signal<IUser | null>(null);
   private platformId = inject(PLATFORM_ID);
   private isBrowser: boolean;
   private tokenCheckSubscription?: Subscription;
@@ -52,12 +38,12 @@ export class AuthService {
 
     // Check if user is authenticated with timeout
     try {
-      const response = await Promise.race([
+      const response = (await Promise.race([
         this.httpService.getUserProfile().toPromise(),
-        new Promise<AuthResponse>((_, reject) =>
-          setTimeout(() => reject(new Error('Profile check timeout')), 2000)
-        )
-      ]) as AuthResponse;
+        new Promise<IAuthResponse>((_, reject) =>
+          setTimeout(() => reject(new Error('Profile check timeout')), 2000),
+        ),
+      ])) as IAuthResponse;
 
       if (response?.data?.user) {
         this.currentUser.set(response.data.user);
@@ -76,13 +62,13 @@ export class AuthService {
     return CryptoJS.SHA256(password).toString();
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
+  login(email: string, password: string): Observable<IAuthResponse> {
     // Hash password client-side
     const hashedPassword = this.encryptPassword(password);
     return this.httpService.login({ email, password: hashedPassword });
   }
 
-  register(userData: any): Observable<AuthResponse> {
+  register(userData: any): Observable<IAuthResponse> {
     // Hash password client-side
     const hashedPassword = this.encryptPassword(userData.password);
     return this.httpService.register({
@@ -91,11 +77,11 @@ export class AuthService {
     });
   }
 
-  setUserData(user: User) {
+  setUserData(user: IUser) {
     this.currentUser.set(user);
   }
 
-  getUserProfile(): Observable<AuthResponse> {
+  getUserProfile(): Observable<IAuthResponse> {
     return this.httpService.getUserProfile();
   }
 

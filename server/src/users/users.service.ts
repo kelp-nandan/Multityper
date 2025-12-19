@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UserRepository } from '../database/repositories';
-import { UserProfile } from '../database/interfaces';
+import { IUserProfile } from '../database/interfaces';
 
 @Injectable()
 export class UsersService {
@@ -21,10 +21,9 @@ export class UsersService {
         this.userRepository = new UserRepository(sequelize);
     }
 
-    async register(createUserDto: CreateUserDto): Promise<UserProfile> {
+    async register(createUserDto: CreateUserDto): Promise<IUserProfile> {
         const { name, email, password } = createUserDto;
 
-        // Check if email is already taken
         const existingUser = await this.userRepository.findByEmail(email);
         if (existingUser) {
             throw new ConflictException('Email already in use');
@@ -45,7 +44,7 @@ export class UsersService {
 
     async login(
         LoginUserDto: LoginUserDto,
-    ): Promise<{ user: UserProfile; accessToken: string; refreshToken: string }> {
+    ): Promise<{ user: IUserProfile; accessToken: string; refreshToken: string }> {
         const { email, password } = LoginUserDto;
 
         // Find user for authentication
@@ -123,7 +122,7 @@ export class UsersService {
         return;
     }
 
-    async findAll(): Promise<UserProfile[]> {
+    async findAll(): Promise<IUserProfile[]> {
         return await this.userRepository.findAll();
     }
 

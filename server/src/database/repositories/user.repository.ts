@@ -1,92 +1,99 @@
-import { Sequelize, QueryTypes } from 'sequelize';
-import { User, UserProfile, CreateUserData } from '../interfaces';
+import { Sequelize } from 'sequelize';
+import { IUser, IUserProfile, ICreateUserData } from '../interfaces';
+import { User } from '../../models';
 
 export class UserRepository {
-    constructor(private sequelize: Sequelize) { }
-
-    
-    //   Find user by email for authentication purposes only.
-     
-    async findByEmailForAuth(email: string): Promise<User | null> {
-        const result = await this.sequelize.query(
-            `SELECT id, name, email, password, created_at, updated_at, created_by, updated_by
-             FROM users WHERE email = :email LIMIT 1`,
-            {
-                replacements: { email },
-                type: QueryTypes.SELECT,
-            },
-        );
-        return result.length > 0 ? (result[0] as User) : null;
+    constructor(private sequelize: Sequelize) {
+        User.initModel(this.sequelize);
     }
 
-    
-    //  Find user by email for general purposes.
-     
-    async findByEmail(email: string): Promise<UserProfile | null> {
-        const result = await this.sequelize.query(
-            `SELECT id, name, email, created_at, updated_at, created_by, updated_by
-             FROM users WHERE email = :email LIMIT 1`,
-            {
-                replacements: { email },
-                type: QueryTypes.SELECT,
-            },
-        );
-        return result.length > 0 ? (result[0] as UserProfile) : null;
+    /**
+     * Find user by email for authentication purposes only.
+     */
+    async findByEmailForAuth(email: string): Promise<IUser | null> {
+        return await User.findOne({
+            where: { email },
+            attributes: ['id', 'name', 'email', 'password', 'created_at', 'updated_at', 'created_by', 'updated_by']
+        });
     }
 
-    async findById(userId: number): Promise<UserProfile | null> {
-        const result = await this.sequelize.query(
-            `SELECT id, name, email, created_at, updated_at
-             FROM users WHERE id = :userId LIMIT 1`,
-            {
-                replacements: { userId },
-                type: QueryTypes.SELECT,
-            },
-        );
-        return result.length > 0 ? (result[0] as UserProfile) : null;
+    /**
+     * Find user by email for general purposes.
+     */
+    async findByEmail(email: string): Promise<IUserProfile | null> {
+        const user = await User.findOne({
+            where: { email },
+            attributes: ['id', 'name', 'email', 'created_at', 'updated_at']
+        });
+        return user ? user.toProfile() : null;
     }
 
-    async create(userData: CreateUserData): Promise<UserProfile> {
-        const { name, email, password } = userData;
-        const result = await this.sequelize.query(
-            `INSERT INTO users (name, email, password, created_at, updated_at) 
-             VALUES (:name, :email, :password, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
-             RETURNING id, name, email, created_at, updated_at`,
-            {
-                replacements: { name, email, password },
-                type: QueryTypes.INSERT,
-            },
-        );
-        return result[0][0] as UserProfile;
+    async findById(userId: number): Promise<IUserProfile | null> {
+        const user = await User.findOne({
+            where: { id: userId },
+            attributes: ['id', 'name', 'email', 'created_at', 'updated_at']
+        });
+        return user ? user.toProfile() : null;
     }
 
-    async findAll(): Promise<UserProfile[]> {
-        const result = await this.sequelize.query(
-            `SELECT id, name, email, created_at, updated_at 
-             FROM users ORDER BY created_at DESC`,
-            {
-                type: QueryTypes.SELECT,
-            },
-        );
-        return result as UserProfile[];
+    async create(userData: ICreateUserData): Promise<IUserProfile> {
+        const user = await User.create({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            created_at: new Date(),
+            updated_at: new Date(),
+        } as IUser);
+        return user.toProfile();
+    }
+
+    async findAll(): Promise<IUserProfile[]> {
+        const users = await User.findAll({
+            attributes: ['id', 'name', 'email', 'created_at', 'updated_at'],
+            order: [['created_at', 'DESC']]
+        });
+        return users.map(user => user.toProfile());
     }
 
     async getTotalCount(): Promise<number> {
-        const result = await this.sequelize.query(`SELECT COUNT(*) as count FROM users`, {
-            type: QueryTypes.SELECT,
-        });
-        return (result[0] as any).count;
+        return await User.count();
     }
 
-    async getActiveUsersLastWeek(): Promise<number> {
-        const result = await this.sequelize.query(
-            `SELECT COUNT(DISTINCT u.id) as count 
-             FROM users u 
-             WHERE u.updated_at > CURRENT_TIMESTAMP - INTERVAL '7 days'`,
+    async updateById(userId: number, updateData: Partial<ICreateUserData>): Promise<IUserProfile | null> {
+        await User.update(
             {
-                type: QueryTypes.SELECT,
+                ...updateData,
+                updated_at: new Date(),
             },
+            {
+                where: { id: userId }
+            }
         );
-        return (result[0] as any).count;
+
+        const updatedUser = await User.findByPk(userId, {
+            attributes: ['id', 'name', 'email', 'created_at', 'updated_at']
+        });
+
+        return updatedUser ? updatedUser.toProfile() : null;
+    }
+
+    async deleteById(userId: number): Promise<boolean> {
+        const deletedRows = await User.destroy({
+            where: { id: userId }
+        });
+        return deletedRows > 0;
+    }
+
+    async findByIds(userIds: number[]): Promise<IUserProfile[]> {
+        if (userIds.length === 0) return [];
+
+        const users = await User.findAll({
+            where: {
+                id: userIds
+            },
+            attributes: ['id', 'name', 'email', 'created_at', 'updated_at'],
+            order: [['created_at', 'DESC']]
+        });
+        return users.map(user => user.toProfile());
     }
 }

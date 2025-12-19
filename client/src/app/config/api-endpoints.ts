@@ -15,32 +15,10 @@ export const API_ENDPOINTS = {
     LIST_USERS: `${environment.apiUrl}/users`,
   },
 
-  // // Future endpoints for typing game features
-  // GAMES: {
-  //     BASE: `${environment.apiUrl}/games`,
-  //     CREATE: `${environment.apiUrl}/games/create`,
-  //     JOIN: `${environment.apiUrl}/games/join`,
-  //     LIST: `${environment.apiUrl}/games/list`,
-  //     LEAVE: `${environment.apiUrl}/games/leave`
-  // },
-
-  // // Leaderboard and stats endpoints
-  // LEADERBOARD: `${environment.apiUrl}/leaderboard`,
-  // STATS: `${environment.apiUrl}/stats`,
-
-  // // Real-time endpoints
-  // WEBSOCKET: {
-  //     BASE: environment.apiUrl.replace('http', 'ws'),
-  //     GAME_ROOM: `${environment.apiUrl.replace('http', 'ws')}/game-room`
-  // }
+  // Paragraph endpoints
+  PARAGRAPHS: {
+    BASE: `${environment.apiUrl}/paragraphs`,
+    RANDOM: `${environment.apiUrl}/paragraphs/random`,
+    BY_NUMBER: `${environment.apiUrl}/paragraphs/number`,
+  },
 } as const;
-
-// Type-safe endpoint getter
-export function getEndpoint(endpoint: keyof typeof API_ENDPOINTS): string {
-  return API_ENDPOINTS[endpoint] as string;
-}
-
-// Helper function to build dynamic endpoints
-export function buildEndpoint(base: string, ...segments: string[]): string {
-  return [base, ...segments].join('/');
-}

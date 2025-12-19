@@ -8,18 +8,19 @@ import {
   ValidationPipe,
   Res,
   Req,
-  HttpStatus,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ENV } from '../config/env.config';
+import { ErrorHandler } from '../common/error-handler';
 
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post('register')
   async register(
@@ -49,13 +50,7 @@ export class UsersController {
         data: { user },
       };
     } catch (error) {
-      if (error.message.includes('email already exists')) {
-        throw new HttpException('Email already exists', HttpStatus.CONFLICT);
-      } else if (error.message.includes('validation')) {
-        throw new HttpException('Invalid input data', HttpStatus.UNPROCESSABLE_ENTITY);
-      } else {
-        throw new HttpException('Registration failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      ErrorHandler.handleError(error, 'Registration failed');
     }
   }
 
@@ -86,16 +81,7 @@ export class UsersController {
         data: { user },
       };
     } catch (error) {
-      if (
-        error.message.includes('invalid credentials') ||
-        error.message.includes('Invalid credentials')
-      ) {
-        throw new HttpException('Invalid email or password', HttpStatus.UNAUTHORIZED);
-      } else if (error.message.includes('validation')) {
-        throw new HttpException('Invalid input format', HttpStatus.UNPROCESSABLE_ENTITY);
-      } else {
-        throw new HttpException('Login failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      ErrorHandler.handleError(error, 'Login failed');
     }
   }
 
@@ -109,7 +95,7 @@ export class UsersController {
         data: users,
       };
     } catch (error) {
-      throw new HttpException('Failed to retrieve users', HttpStatus.INTERNAL_SERVER_ERROR);
+      ErrorHandler.handleError(error, 'Failed to retrieve users');
     }
   }
 
@@ -124,7 +110,7 @@ export class UsersController {
         },
       };
     } catch (error) {
-      throw new HttpException('Failed to retrieve profile', HttpStatus.INTERNAL_SERVER_ERROR);
+      ErrorHandler.handleError(error, 'Failed to retrieve profile');
     }
   }
 
@@ -152,12 +138,7 @@ export class UsersController {
     } catch (error) {
       response.clearCookie('access_token');
       response.clearCookie('refresh_token');
-
-      if (error.message.includes('expired') || error.message.includes('invalid')) {
-        throw new HttpException('Invalid or expired refresh token', HttpStatus.UNAUTHORIZED);
-      } else {
-        throw new HttpException('Token refresh failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      ErrorHandler.handleError(error, 'Token refresh failed');
     }
   }
 

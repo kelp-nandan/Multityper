@@ -4,20 +4,7 @@ import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-
-interface AuthResponse {
-  success: boolean;
-  message: string;
-  data: {
-    user?: {
-      id: number;
-      name: string;
-      email: string;
-    };
-    accessToken?: string;
-    refreshToken?: string;
-  };
-}
+import { IAuthResponse } from '../../interfaces/auth.interfaces';
 
 @Component({
   selector: 'app-login',
@@ -66,7 +53,6 @@ export class Login {
       this.authService.login(email, password).subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          // If we reach here, HTTP status was 2xx (success)
           if (response.data?.user) {
             this.authService.setUserData(response.data.user);
             this.successMessage.set('Login successful! Redirecting...');
@@ -78,22 +64,7 @@ export class Login {
         error: (error) => {
           this.isLoading.set(false);
 
-          // Simplified error handling based on status code ranges
-          const message =
-            error.status === 401
-              ? 'Invalid email or password'
-              : error.status === 409
-                ? 'Email already exists'
-                : error.status === 422
-                  ? 'Please check your input'
-                  : error.status === 429
-                    ? 'Too many attempts - please wait'
-                    : error.status >= 500
-                      ? 'Server error - try again later'
-                      : error.status === 0
-                        ? 'Network error - check connection'
-                        : error.error?.message || 'Please try again';
-
+          const message = this.getErrorMessage(error);
           this.errorMessage.set(message);
         },
       });
@@ -108,7 +79,6 @@ export class Login {
       this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          // If we reach here, HTTP status was 2xx (success)
           this.successMessage.set('Registration successful! Please login.');
           this.isLoginMode.set(true);
           this.registerForm.reset();
@@ -116,20 +86,7 @@ export class Login {
         error: (error) => {
           this.isLoading.set(false);
 
-          // Simplified error handling - same pattern as login
-          const message =
-            error.status === 409
-              ? 'Email already exists - use different email'
-              : error.status === 422
-                ? 'Please check your input'
-                : error.status === 429
-                  ? 'Too many attempts - please wait'
-                  : error.status >= 500
-                    ? 'Server error - try again later'
-                    : error.status === 0
-                      ? 'Network error - check connection'
-                      : error.error?.message || 'Registration failed - please try again';
-
+          const message = this.getErrorMessage(error);
           this.errorMessage.set(message);
         },
       });
@@ -148,12 +105,27 @@ export class Login {
       if (control.errors['email']) return 'Invalid email format';
       if (control.errors['minlength'])
         return `${field} must be at least ${control.errors['minlength'].requiredLength} characters`;
-      if (control.errors['pattern']) {
-        if (field === 'password' && form === this.registerForm) {
-          return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
-        }
-      }
     }
     return '';
+  }
+
+  private getErrorMessage(error: any): string {
+    switch (error.status) {
+      case 401:
+        return 'Invalid email or password';
+      case 409:
+        return 'Email already exists';
+      case 422:
+        return 'Please check your input';
+      case 429:
+        return 'Too many attempts - please wait';
+      case 0:
+        return 'Network error - check connection';
+      default:
+        if (error.status >= 500) {
+          return 'Server error - try again later';
+        }
+        return error.error?.message || 'Please try again';
+    }
   }
 }

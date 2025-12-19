@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   id: number;
   name: string;
   email: string;
@@ -9,7 +9,7 @@ export interface User {
   updated_by?: number;
 }
 
-export interface UserProfile {
+export interface IUserProfile {
   id: number;
   name: string;
   email: string;
@@ -17,7 +17,7 @@ export interface UserProfile {
   updated_at: Date;
 }
 
-export interface CreateUserData {
+export interface ICreateUserData {
   name: string;
   email: string;
   password: string;

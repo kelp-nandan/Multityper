@@ -12,8 +12,8 @@ export const authGuard: CanActivateFn = async (route, state) => {
     const isAuthenticated = await Promise.race([
       authService.waitForAuthCheck(),
       new Promise<boolean>((_, reject) =>
-        setTimeout(() => reject(new Error('Auth check timeout')), 3000)
-      )
+        setTimeout(() => reject(new Error('Auth check timeout')), 3000),
+      ),
     ]);
 
     if (requiresAuth) {

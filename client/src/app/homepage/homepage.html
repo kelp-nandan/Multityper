@@ -1,10 +1,18 @@
-<div class="flex justify-end p-4">
-  <button
-    (click)="onLogout()"
-    class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition-all duration-200"
-  >
-    Logout
-  </button>
-</div>
+<div class="homepage-container">
+  <header class="homepage-header">
+    <h1>Multi-Typer Game</h1>
+    <p>Welcome to the ultimate typing challenge!</p>
+  </header>
 
-<h1>Coming Soon</h1>
+  <main class="homepage-content">
+    <section class="game-intro">
+      <h2>Ready to Test Your Typing Skills?</h2>
+      <p>Challenge yourself with various paragraphs and improve your typing speed and accuracy.</p>
+
+      <div class="action-buttons">
+        <button class="start-game-btn" (click)="startGame()">Start Game</button>
+        <button class="logout-btn" (click)="onLogout()">Logout</button>
+      </div>
+    </section>
+  </main>
+</div>

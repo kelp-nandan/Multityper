@@ -5,9 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthsModule } from './auths/auths.module';
 import { UsersModule } from './users/users.module';
-import { RedisModule } from './redis/redis/redis.module';
-import configuration from './config/configuration'; // ✅ ADD THIS
-import { ChatModule } from './chat/chat.module';
+import { RedisModule } from './redis/redis.module';
+import configuration from './config/configuration';
+import { ChatModule } from './rooms/rooms.module';
 
 
 @Module({

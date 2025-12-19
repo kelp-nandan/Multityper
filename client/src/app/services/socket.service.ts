@@ -2,17 +2,17 @@ import { Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Room } from '../interfaces/room.interface';
 import { RoomService } from './room.service';
+import {SERVER_URL} from '../constants/index';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: Socket;
 
   constructor(private roomService: RoomService, private ngZone: NgZone) {
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(SERVER_URL, {
       withCredentials: true
     });
     this.socket.on('connect', () => {
-        this.handleTesting();
         this.handleGetAllRooms();
     })
     this.listenEvents();
@@ -21,9 +21,6 @@ export class SocketService {
 
   private listenEvents() {
     
-    this.socket.on('test', (data: { msg: string }) => {
-        console.log(data.msg, " from backend");
-    });
 
     this.socket.on('set-all-rooms', (data: any[]) => {
       this.ngZone.run(() => {
@@ -51,7 +48,6 @@ export class SocketService {
 
     this.socket.on('room-updated', (item: any) => {
       this.ngZone.run(() => {
-        console.log("Room updated event received:", item);
         
         let updatedRoom: Room;
         if (item.key && item.data) {
@@ -70,16 +66,11 @@ export class SocketService {
 
     this.socket.on('room-destroyed', (data: {roomId: string}) => {
       this.ngZone.run(() => {
-        console.log('Room destroyed:', data.roomId);
         this.roomService.removeRoom(data.roomId);
         this.roomService.clearSelectRoom();
       })
     });
 
-  }
-
-  handleTesting() {
-    this.socket.emit('testing', {msg: 'Hello from client'});
   }
 
   handleCreateRoom(data: { roomName: string }){

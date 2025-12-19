@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 
+
 @Injectable()
 export class WsJwtGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
@@ -25,6 +26,10 @@ export class WsJwtGuard implements CanActivate {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+      // const userExist = this.userRepo.findOne({ where: { id: payload.sub } });
+      // if(!userExist) {
+      //   throw new UnauthorizedException("user not valid");
+      // }
 
       client.data.user = {
         id: payload.sub,
@@ -34,7 +39,7 @@ export class WsJwtGuard implements CanActivate {
 
       return true;
     } catch (err) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException(err);
     }
   }
 }

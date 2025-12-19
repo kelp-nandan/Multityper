@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Room } from '../interfaces/room.interface';
-import { RoomService } from '../services/room.service';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { SocketService } from '../services/socket.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './gamelobby.html',
-  styleUrls: ['./gamelobby.css'],
+  styleUrls: ['./gamelobby.scss'],
 })
 export class Gamelobby implements OnInit {
   room$!: Observable<Room | null>;
@@ -51,7 +51,8 @@ export class Gamelobby implements OnInit {
   }
 
   destroyRace(roomId: string) {
-    this.socketService.handleDestroyRoom(roomId);
+    this.socketService.handleDestroyRoom(roomId);  
+    this.roomService.clearSelectRoom();
     this.router.navigate(['homepage']);
   }
 }

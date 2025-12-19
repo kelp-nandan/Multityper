@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Room } from '../interfaces/room.interface';
 import { Modal } from '../modal/modal';
 import { AuthService } from '../services/auth.service';
-import { SocketService } from '../services/socket.service';
-import { Room } from '../interfaces/room.interface';
 import { RoomService } from '../services/room.service';
-import { Observable } from 'rxjs';
+import { SocketService } from '../services/socket.service';
 
 interface User {
   id: number;
@@ -21,7 +21,7 @@ interface User {
   selector: 'app-homepage',
   imports: [CommonModule, FormsModule, Modal],
   templateUrl: './homepage.html',
-  styleUrls: ['./homepage.css'],
+  styleUrls: ['./homepage.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
@@ -48,11 +48,11 @@ export class Homepage implements OnInit {
   
 
   ngOnInit() {
-    this.socketService.handleTesting();
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
     }
+
 
     const currentUser = this.authService.currentUser();
     if (currentUser) {
@@ -70,25 +70,22 @@ export class Homepage implements OnInit {
     this.showCreateModal.set(true);
   }
 
-  handleCreateConfirm() {
-    console.log('Creating new room');
-    this.socketService.handleCreateRoom({ roomName: this.roomName() });
-    this.showCreateModal.set(false);
-    this.roomName.set('');
-    this.router.navigate(['/participants']);
-  }
-
   handleJoinClose() {
     this.showJoinModal.set(false);
-
   }
 
   handleCreateClose() {
     this.showCreateModal.set(false);
   }
 
+  handleCreateConfirm() {
+    this.socketService.handleCreateRoom({ roomName: this.roomName() });
+    this.showCreateModal.set(false);
+    this.router.navigate(['/participants']);
+    this.roomName.set('');
+  }
+
   handleJoinRoom(room: Room) {
-    console.log('Entering room with ID:', room.roomId);
     this.roomService.selectRoom(room);
     this.showJoinModal.set(false);
     this.socketService.handleJoinRoom(room.roomId);

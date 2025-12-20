@@ -36,9 +36,9 @@ export class Gamelobby implements OnInit {
     this.roomService.selectedRoom$.subscribe((room) => {
       if (room) {
         const currentUser = this.authService.currentUser();
-        const creatorPlayer = room.players?.find((p) => p.isCreated);
+        const createdBy = room.players?.find((p) => p.isCreated);
         this.isCreator.set(
-          creatorPlayer?.userName === currentUser?.name
+          createdBy?.userName === currentUser?.name
         );
       } else {
         this.router.navigate(['/homepage']);
@@ -47,7 +47,6 @@ export class Gamelobby implements OnInit {
   }
 
   startRace(roomId: string) {
-    console.log("Race Started...Countdown part");
     this.socketService.handleCountdown(roomId);
   }
 

@@ -1,6 +1,6 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Socket } from 'socket.io';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Socket } from "socket.io";
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
@@ -11,12 +11,12 @@ export class WsJwtGuard implements CanActivate {
 
     const cookieHeader = client.handshake.headers.cookie;
     if (!cookieHeader) {
-      throw new UnauthorizedException('No authentication cookie found');
+      throw new UnauthorizedException("No authentication cookie found");
     }
 
     const match = cookieHeader.match(/access_token=([^;]+)/);
     if (!match) {
-      throw new UnauthorizedException('JWT not found in cookies');
+      throw new UnauthorizedException("JWT not found in cookies");
     }
 
     const token = match[1];
@@ -25,10 +25,6 @@ export class WsJwtGuard implements CanActivate {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
-      // const userExist = this.userRepo.findOne({ where: { id: payload.sub } });
-      // if(!userExist) {
-      //   throw new UnauthorizedException("user not valid");
-      // }
 
       client.data.user = {
         id: payload.sub,

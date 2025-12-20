@@ -1,4 +1,4 @@
-import { FRONTEND_URL } from 'src/constants/index';
+import { FRONTEND_URL } from "src/constants/index";
 
 export const wsConfig = {
   cors: {

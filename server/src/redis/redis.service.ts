@@ -1,18 +1,18 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { createClient, RedisClientType } from 'redis';
-import { IGetRooms, IRooms } from 'src/interfaces/rooms.interface';
+import { Injectable, OnModuleInit } from "@nestjs/common";
+import { createClient, RedisClientType } from "redis";
+import { IGetRooms, IRooms } from "src/interfaces/rooms.interface";
 @Injectable()
 export class RedisService implements OnModuleInit {
   private client: RedisClientType;
 
   async onModuleInit() {
     this.client = createClient({
-      url: `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`,
+      url: `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST || "localhost"}:${process.env.REDIS_PORT || 6379}`,
     });
 
     await this.client.connect();
 
-    this.client.on('error', err => console.error('Redis Client Error', err));
+    this.client.on("error", err => console.error("Redis Client Error", err));
   }
 
   async onModuleDestroy() {
@@ -34,11 +34,11 @@ export class RedisService implements OnModuleInit {
 
   async getAllRooms() {
     const rooms: IGetRooms[] = [];
-    let cursor = '0';
+    let cursor = "0";
 
     do {
       const reply = await this.client.scan(cursor, {
-        MATCH: '*',
+        MATCH: "*",
         COUNT: 100,
       });
 
@@ -57,7 +57,7 @@ export class RedisService implements OnModuleInit {
           }
         });
       }
-    } while (cursor !== '0');
+    } while (cursor !== "0");
     return rooms;
   }
 }

@@ -99,7 +99,6 @@ export class SocketService {
     })
 
     this.socket.on('lock-room', (item: any) => {
-      console.log("reached lock room with payload", item);
       this.ngZone.run(() => {
         
         let updatedRoom: IRoom;
@@ -113,7 +112,6 @@ export class SocketService {
         } else {
           updatedRoom = item;
         }
-        console.log("updated data: ", updatedRoom); 
         this.roomService.updateRoom(updatedRoom);
       });
     })
@@ -125,7 +123,6 @@ export class SocketService {
   }
   
   handleJoinRoom(roomId: string) {
-    console.log(roomId);
     this.socket.emit('join-room', { roomId });
   }
 

@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -6,12 +6,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
   WsException,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from 'src/auths/guards/ws-jwt.guard';
-import { wsConfig } from 'src/config/wsConfig';
-import { RedisService } from 'src/redis/redis.service';
-import { v4 as uuid4 } from 'uuid';
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
+import { WsJwtGuard } from "src/auths/guards/ws-jwt.guard";
+import { wsConfig } from "src/config/wsConfig";
+import { RedisService } from "src/redis/redis.service";
+import { v4 as uuid4 } from "uuid";
 
 @WebSocketGateway(wsConfig)
 @UseGuards(WsJwtGuard)
@@ -20,7 +20,7 @@ export class ChatGateWay {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('create-room')
+  @SubscribeMessage("create-room")
   async handleCreateRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomName: string },
@@ -39,7 +39,7 @@ export class ChatGateWay {
         isGameStarted: false,
       });
       const newRoom = await this.redisService.getRoom(roomId);
-      this.server.emit('created-room', {
+      this.server.emit("created-room", {
         key: roomId,
         data: newRoom,
       });
@@ -48,7 +48,7 @@ export class ChatGateWay {
     }
   }
 
-  @SubscribeMessage('join-room')
+  @SubscribeMessage("join-room")
   async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: string }) {
     try {
       const user = client.data.user;
@@ -74,42 +74,39 @@ export class ChatGateWay {
 
       roomData.players = players;
       await this.redisService.setRoom(data.roomId, roomData);
-      this.server.emit('room-updated', { key: data.roomId, data: roomData });
+      this.server.emit("room-updated", { key: data.roomId, data: roomData });
     } catch (err) {
       console.error(err);
     }
   }
 
-  @SubscribeMessage('destroy-room')
+  @SubscribeMessage("destroy-room")
   async handleDestroyRoom(@MessageBody() data: { roomId: string }) {
     await this.redisService.deleteRoom(data.roomId);
-    this.server.emit('room-destroyed', { roomId: data.roomId });
+    this.server.emit("room-destroyed", { roomId: data.roomId });
   }
 
-  @SubscribeMessage('get-all-rooms')
+  @SubscribeMessage("get-all-rooms")
   async handlegetAllrooms(@ConnectedSocket() client: Socket) {
     const data = await this.redisService.getAllRooms();
-    client.emit('set-all-rooms', data);
+    client.emit("set-all-rooms", data);
   }
 
-  @SubscribeMessage('countdown')
+  @SubscribeMessage("countdown")
   async handleStartCountdown(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
     const userId = client.data.user.id;
     const roomData = await this.redisService.getRoom(roomId);
     if (!roomData) return;
-    console.log('Reached');
     const host = roomData.players.find(player => player.isCreated && player.userId === userId);
 
     if (!host) {
-      throw new WsException('Only Host can start the game');
+      throw new WsException("Only Host can start the game");
     }
-    console.log('host found', host.userId);
     roomData.isGameStarted = true;
-    this.server.to(roomId).emit('lock-room', roomData);
-    console.log('emitted event lock-room');
+    this.server.to(roomId).emit("lock-room", roomData);
     setTimeout(async () => {
       await this.redisService.setRoom(roomId, roomData);
-      this.server.to(roomId).emit('game-started', roomData);
-    }, 10_000);
+      this.server.to(roomId).emit("game-started", roomData);
+    }, 10000);
   }
 }

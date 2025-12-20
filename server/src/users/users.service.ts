@@ -1,14 +1,14 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
-import { User } from './entities/user.entity';
-import { RefreshToken } from './entities/refresh-token.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { Injectable, ConflictException, UnauthorizedException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
+import { User } from "./entities/user.entity";
+import { RefreshToken } from "./entities/refresh-token.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { LoginUserDto } from "./dto/login-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -21,12 +21,12 @@ export class UsersService {
     private configService: ConfigService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async register(createUserDto: CreateUserDto): Promise<Omit<User, "password">> {
     const { name, email, password } = createUserDto;
 
     const existingUser = await this.UserRepository.findOne({ where: { email } });
     if (existingUser) {
-      throw new ConflictException('Email already in use');
+      throw new ConflictException("Email already in use");
     }
 
     // Client sends pre-hashed password (with fixed salt for consistency)
@@ -47,18 +47,18 @@ export class UsersService {
 
   async login(
     LoginUserDto: LoginUserDto,
-  ): Promise<{ user: Omit<User, 'password'>; accessToken: string; refreshToken: string }> {
+  ): Promise<{ user: Omit<User, "password">; accessToken: string; refreshToken: string }> {
     const { email, password } = LoginUserDto;
 
     const user = await this.UserRepository.findOne({ where: { email } });
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     // Client sends pre-hashed password, compare with server hash
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     // JWT payload with userId and name for game requirements
@@ -80,9 +80,9 @@ export class UsersService {
   }
 
   private async generateRefreshToken(userId: number): Promise<string> {
-    const token = crypto.randomBytes(64).toString('hex');
+    const token = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date();
-    const refreshExpireDays = this.configService.get<number>('jwt.refreshExpiresInDays') || 7;
+    const refreshExpireDays = this.configService.get<number>("jwt.refreshExpiresInDays") || 7;
     expiresAt.setDate(expiresAt.getDate() + refreshExpireDays);
 
     const refreshToken = this.refreshTokenRepository.create({
@@ -98,11 +98,11 @@ export class UsersService {
   async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
     const storedToken = await this.refreshTokenRepository.findOne({
       where: { token: refreshToken },
-      relations: ['user'],
+      relations: ["user"],
     });
 
     if (!storedToken || storedToken.revoked || storedToken.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new UnauthorizedException("Invalid or expired refresh token");
     }
 
     const payload = {
@@ -126,7 +126,7 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<Omit<User, 'password'>[]> {
+  async findAll(): Promise<Omit<User, "password">[]> {
     const users = await this.UserRepository.find();
     return users.map(({ password, ...user }) => user);
   }

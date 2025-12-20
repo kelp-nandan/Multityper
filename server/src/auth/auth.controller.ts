@@ -5,14 +5,15 @@ import {
   ValidationPipe,
   Res,
   Req,
-  HttpException,
-  HttpStatus,
 } from "@nestjs/common";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { LoginUserDto } from "../users/dto/login-user.dto";
 import { UsersService } from "../users/users.service";
 import { ENV } from "../config/env.config";
 import { ErrorHandler } from "../common/error-handler";
+
+const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 minutes
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 @Controller("api/auth")
 export class AuthController {
@@ -32,14 +33,14 @@ export class AuthController {
         httpOnly: true,
         secure: ENV.isProduction(),
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
+        maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       response.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: ENV.isProduction(),
         sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
       });
 
       return {
@@ -64,14 +65,14 @@ export class AuthController {
         httpOnly: true,
         secure: ENV.isProduction(),
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
+        maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       response.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: ENV.isProduction(),
         sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
       });
 
       return {
@@ -95,16 +96,12 @@ export class AuthController {
       response.clearCookie("access_token");
       response.clearCookie("refresh_token");
 
-      return {
-        message: "Logged out successfully",
-      };
+      return { message: "Logged out successfully" };
     } catch (error) {
       response.clearCookie("access_token");
       response.clearCookie("refresh_token");
 
-      return {
-        message: "Logged out successfully",
-      };
+      return { message: "Logged out successfully" };
     }
   }
 }

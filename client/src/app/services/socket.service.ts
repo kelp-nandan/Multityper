@@ -5,11 +5,6 @@ import { RoomService } from './room.service';
 import {SERVER_URL} from '../constants/index';
 import { Router } from '@angular/router';
 
-interface HostDetails {
-  roomId: string,
-  userId: number,
-}
-
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: Socket;
@@ -24,10 +19,7 @@ export class SocketService {
     this.listenEvents();
   }
 
-
   private listenEvents() {
-    
-
     this.socket.on('set-all-rooms', (data: any[]) => {
       this.ngZone.run(() => {
         const rooms: IRoom[] = data.map((item) => ({
@@ -36,7 +28,6 @@ export class SocketService {
           players: item.data.players,
           gameStarted: item.data.isGameStarted
         }));
-
         this.roomService.setRooms(rooms);
       });
     });
@@ -68,7 +59,6 @@ export class SocketService {
         } else {
           updatedRoom = item;
         }
-        
         this.roomService.updateRoom(updatedRoom);
       });
     });
@@ -79,44 +69,6 @@ export class SocketService {
         this.roomService.clearSelectRoom();
       })
     });
-
-    this.socket.on('game-started', (item: any) => {
-      this.ngZone.run(() => {
-        
-        let updatedRoom: IRoom;
-        if (item.key && item.data) {
-          updatedRoom = {
-            roomId: item.key,
-            roomName: item.data.roomName,
-            players: item.data.players,
-            gameStarted: item.data.isGameStarted
-          };
-        } else {
-          updatedRoom = item;
-        }
-        
-        this.roomService.updateRoom(updatedRoom);
-      });
-    })
-
-    this.socket.on('lock-room', (item: any) => {
-      this.ngZone.run(() => {
-        
-        let updatedRoom: IRoom;
-        if (item.key && item.data) {
-          updatedRoom = {
-            roomId: item.key,
-            roomName: item.data.roomName,
-            players: item.data.players,
-            gameStarted: item.data.isGameStarted
-          };
-        } else {
-          updatedRoom = item;
-        }
-        this.roomService.updateRoom(updatedRoom);
-      });
-    })
-
   }
 
   handleCreateRoom(data: { roomName: string }){

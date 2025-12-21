@@ -8,13 +8,7 @@ import { Modal } from '../modal/modal';
 import { AuthService } from '../identity/services/auth.service';
 import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  createdAt?: string;
-}
+import { IUser } from '../interfaces';
 
 
 @Component({
@@ -37,7 +31,7 @@ export class Homepage implements OnInit {
     this.rooms$ = this.roomService.rooms$;
   }
 
-  user = signal<User | null>(null);
+  user = signal<IUser | null>(null);
   showDetails = signal(false);
   isLoading = signal(false);
   showJoinModal = signal(false);
@@ -47,21 +41,16 @@ export class Homepage implements OnInit {
   
 
   ngOnInit() {
-    console.log('Homepage ngOnInit called');
     if (!this.authService.isAuthenticated()) {
-      console.log('User not authenticated, redirecting to login');
       this.router.navigate(['/login']);
       return;
     }
 
     const currentUser = this.authService.currentUser();
-    console.log('Current user from authService:', currentUser);
     if (currentUser) {
-      // Handle Sequelize objects by extracting dataValues if present
       const cleanUser = (currentUser as any)?.dataValues || currentUser;
       this.user.set(cleanUser);
     } else {
-      console.log('No current user, fetching profile...');
       this.fetchUserProfile();
     }
   }
@@ -102,21 +91,16 @@ export class Homepage implements OnInit {
 
 
   fetchUserProfile() {
-    console.log('Fetching user profile...');
     this.isLoading.set(true);
     this.authService.getUserProfile().subscribe({
       next: (response) => {
-        console.log('Profile response:', response);
         this.isLoading.set(false);
         if (response.data.user) {
-          console.log('User data:', response.data.user);
-          // Handle Sequelize objects by extracting dataValues if present
           const cleanUser = (response.data.user as any)?.dataValues || response.data.user;
           this.user.set(cleanUser);
         }
       },
       error: (error) => {
-        console.error('Error fetching user profile:', error);
         this.isLoading.set(false);
         console.error('Error fetching user profile:', error);
         this.authService.logout();

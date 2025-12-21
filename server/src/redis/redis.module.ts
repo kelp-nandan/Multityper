@@ -23,7 +23,6 @@ import { RedisService } from "./redis.service";
           console.log(err.message);
         });
         await client.connect();
-        console.log("Redis Connected Successfully");
         return client;
       },
     },

@@ -1,12 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Socket } from "socket.io";
+import { UserRepository } from "src/database/repositories";
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userRepository: UserRepository,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const client: Socket = context.switchToWs().getClient<Socket>();
 
     const cookieHeader = client.handshake.headers.cookie;
@@ -20,11 +24,22 @@ export class WsJwtGuard implements CanActivate {
     }
 
     const token = match[1];
+    if(!token) {
+      throw new UnauthorizedException('Authentication token not provided');
+    }
 
     try {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      if(!payload?.sub) {
+        throw new UnauthorizedException("Invalid token payload");
+      }
+      const user = await this.userRepository.findById(payload.sub);
+      if(!user) {
+        throw new UnauthorizedException('User not found');
+      }
 
       client.data.user = {
         id: payload.sub,

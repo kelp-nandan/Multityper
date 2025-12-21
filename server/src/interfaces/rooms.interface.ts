@@ -11,15 +11,3 @@ export interface IGetRooms {
     ];
   };
 }
-
-export interface IRooms {
-  roomName: string;
-  players: [
-    {
-      userId: number;
-      userName: string;
-      isCreated: boolean;
-    },
-  ];
-  isGameStarted: boolean;
-}

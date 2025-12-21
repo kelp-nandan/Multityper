@@ -6,8 +6,7 @@ import { UsersModule } from "./users/users.module";
 import { RedisModule } from "./redis/redis.module";
 import configuration from "./config/configuration";
 import { ChatModule } from "./rooms/rooms.module";
-import { databaseProviders } from "./config/database.config";
-
+import { DatabaseModule } from "./database/database.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,12 +14,13 @@ import { databaseProviders } from "./config/database.config";
       envFilePath: ".env",
       load: [configuration],
     }),
+    DatabaseModule,
     UsersModule,
     AuthModule,
     RedisModule,
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [...databaseProviders],
+  providers: [],
 })
 export class AppModule {}

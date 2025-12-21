@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { createClient, RedisClientType } from "redis";
-import { IGetRooms, IRooms } from "src/interfaces/rooms.interface";
+import { IGetRooms } from "src/interfaces/rooms.interface";
 @Injectable()
 export class RedisService implements OnModuleInit {
   private client: RedisClientType;
@@ -19,8 +19,8 @@ export class RedisService implements OnModuleInit {
     await this.client.quit();
   }
 
-  async setRoom(id: string, data: IRooms) {
-    await this.client.set(id, JSON.stringify(data));
+  async setRoom(id: string, data: IGetRooms) {
+    await this.client.set(data.roomId, JSON.stringify(data.data));
   }
 
   async getRoom(id: string) {
@@ -55,6 +55,7 @@ export class RedisService implements OnModuleInit {
               data: JSON.parse(value),
             });
           }
+          console.log("keys[index]: ", keys[index]);
         });
       }
     } while (cursor !== "0");

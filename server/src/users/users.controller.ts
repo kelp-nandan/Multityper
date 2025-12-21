@@ -25,7 +25,6 @@ export class UsersController {
   @Get("profile")
   async getProfile(@Request() req) {
     try {
-      console.log("req.user:", req.user);
       return {
         message: "Profile retrieved successfully",
         data: {

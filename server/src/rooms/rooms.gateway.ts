@@ -15,7 +15,7 @@ import { v4 as uuid4 } from "uuid";
 
 @WebSocketGateway(wsConfig)
 @UseGuards(WsJwtGuard)
-export class ChatGateWay {
+export class RoomGateWay {
   constructor(private redisService: RedisService) {}
   @WebSocketServer()
   server: Server;
@@ -27,16 +27,19 @@ export class ChatGateWay {
   ) {
     const roomId = uuid4();
     try {
-      await this.redisService.setRoom(roomId, {
-        roomName: data.roomName,
-        players: [
-          {
-            userId: client.data.user.id,
-            userName: client.data.user.name,
-            isCreated: true,
-          },
-        ],
-        isGameStarted: false,
+      await this.redisService.setRoom({
+        roomId,
+        data: {
+          roomName: data.roomName,
+          players: [
+            {
+              userId: client.data.user.id,
+              userName: client.data.user.name,
+              isCreated: true,
+            },
+          ],
+          isGameStarted: false,
+        },
       });
       const newRoom = await this.redisService.getRoom(roomId);
       this.server.emit("created-room", {
@@ -103,10 +106,10 @@ export class ChatGateWay {
       throw new WsException("Only Host can start the game");
     }
     roomData.isGameStarted = true;
-    this.server.to(roomId).emit("lock-room", roomData);
+    this.server.to(roomId).emit("room-updated", roomData);
     setTimeout(async () => {
       await this.redisService.setRoom(roomId, roomData);
-      this.server.to(roomId).emit("game-started", roomData);
+      this.server.to(roomId).emit("room-updated", roomData);
     }, 10000);
   }
 }

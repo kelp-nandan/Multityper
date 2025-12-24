@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { Login } from './identity/login/login';
 import { Homepage } from './homepage/homepage';
 import { authGuard } from './identity/guards/auth.guard';
+import { Liveprogress } from './liveprogress/liveprogress';
+import { Leaderboard } from './leaderboard/leaderboard';
 
 export const routes: Routes = [
   {
@@ -21,7 +23,7 @@ export const routes: Routes = [
     data: { requiresAuth: true }
   },
   {
-    path: 'participants',
+    path: 'rooms/:_id',
     canActivate: [authGuard],
     loadComponent: () => import('./gamelobby/gamelobby').then(c => c.Gamelobby),
     data: { requiresAuth: true }

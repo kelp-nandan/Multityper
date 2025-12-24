@@ -15,11 +15,13 @@ import {
   WordState,
   CharState
 } from '../interfaces';
+import { RoomService } from '../services/room.service';
+import { Liveprogress } from '../liveprogress/liveprogress';
 
 @Component({
   selector: 'app-game-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Liveprogress],
   templateUrl: './game-dashboard.html',
   styleUrl: './game-dashboard.scss',
 })
@@ -54,17 +56,30 @@ export class GameDashboard implements OnInit, OnDestroy {
   //Final calculated results 
   wpm = signal(0);
   timeTakenSeconds = signal(0);
+  private progressEmitTimer: any;
 
-  constructor(private socket: SocketService) { }
+  constructor(private socket: SocketService, private roomService: RoomService) {}
 
   /**
    * Component initialization:
    * 1. Start countdown
    * 2. Listen for paragraph from backend
    */
+  
+
+
   ngOnInit(): void {
     this.startCountdown();
     this.listenForParagraph();
+    this.startProgressEmitter();
+  }
+
+  private startProgressEmitter(): void {
+    this.progressEmitTimer = setInterval(() => {
+      if (this.gameStarted() && !this.isFinished() && this.startTime()) {
+        this.emitLiveProgress();
+      }
+    }, 2000);
   }
 
 // Listens for "paragraph-ready" event from backend. Converts paragraph string into:   word[] -> char[]
@@ -100,6 +115,7 @@ export class GameDashboard implements OnInit, OnDestroy {
     // Start timer on first valid key press
     if (!this.startTime()) {
       this.startTime.set(Date.now());
+      this.emitLiveProgress();
     }
 
     const input = event.target as HTMLTextAreaElement;
@@ -131,7 +147,10 @@ export class GameDashboard implements OnInit, OnDestroy {
         if (words[wIndex + 1]) {
           words[wIndex + 1].state = 'active' as WordState;
         } else {
+          // Update UI state BEFORE calling handleCompletion
+          this.wordStates.set([...words]);
           this.handleCompletion();
+          return; // Exit early
         }
       }
     }
@@ -143,6 +162,37 @@ export class GameDashboard implements OnInit, OnDestroy {
 
     // Trigger UI update
     this.wordStates.set([...words]);
+  }
+
+  emitLiveProgress() {
+    const roomId = this.roomService.getCurrentRoom()?.key;
+    if (!roomId) {
+      console.warn('No room ID, cannot emit progress');
+      return;
+    }
+
+    const totalChars = this.wordStates().reduce((acc, w) => acc + w.chars.length, 0);
+    if (totalChars === 0) return;
+
+    // Progress = (correct + incorrect) / total * 100
+    const typedChars = this.correctCount() + this.totalErrors();
+    let progress = Math.round((typedChars / totalChars) * 100);
+    progress = Math.min(progress, 100); // Cap at 100%
+
+    // Calculate real-time WPM
+    const now = Date.now();
+    const start = this.startTime() ?? now;
+    const durationMinutes = (now - start) / 60000;
+    const currentWpm = durationMinutes > 0
+      ? Math.round((this.correctCount() / 5) / durationMinutes)
+      : 0;
+
+    // Calculate real-time accuracy
+    const currentAccuracy = typedChars > 0
+      ? Math.round((this.correctCount() / typedChars) * 100)
+      : 0;
+
+    this.socket.handleLiveProgress(roomId, progress, currentWpm, currentAccuracy);
   }
 
   //Disable backspace to keep typing flow strict.
@@ -157,6 +207,11 @@ export class GameDashboard implements OnInit, OnDestroy {
    //Called once the last word is completed. Calculates WPM, accuracy and sends stats to backend.
   private handleCompletion(): void {
     this.isFinished.set(true);
+
+    // Stop the progress emitter
+    if (this.progressEmitTimer) {
+      clearInterval(this.progressEmitTimer);
+    }
 
     const endTime = Date.now();
     const start = this.startTime() ?? endTime;
@@ -181,6 +236,13 @@ export class GameDashboard implements OnInit, OnDestroy {
             (this.correctCount() + this.totalErrors())) * 100
         )
         : 0;
+
+    // Emit 100% progress with final WPM and accuracy
+    const roomId = this.roomService.getCurrentRoom()?.key;
+    if (roomId) {
+      this.socket.handleLiveProgress(roomId, 100, wpm, accuracy);
+      console.log(`Final stats: 100% | WPM: ${wpm} | Accuracy: ${accuracy}%`);
+    }
 
     // Notify backend
     this.socket.emit('player-finished', {
@@ -213,5 +275,8 @@ export class GameDashboard implements OnInit, OnDestroy {
    
   ngOnDestroy(): void {
     this.socket.off('paragraph-ready');
+    if (this.progressEmitTimer) {
+      clearInterval(this.progressEmitTimer);
+    }
   }
 }

@@ -20,11 +20,11 @@ export class RedisService implements OnModuleInit {
     await this.client.quit();
   }
 
-  async setRoom(id: string, data: IGetRooms['data']): Promise<void> {
-    await this.client.set(id, JSON.stringify(data));
+  async setRoom(room: IGetRooms) {
+    await this.client.set(room.key, JSON.stringify(room.data));
   }
 
-  async getRoom(id: string): Promise<IGetRooms['data'] | null> {
+  async getRoom(id: string) {
     const data = await this.client.get(id);
     return data ? JSON.parse(data) : null;
   }

@@ -56,7 +56,7 @@ export class Homepage implements OnInit {
   }
 
   trackByRoomId(index: number, room: IRoom) {
-    return room.roomId;
+    return room.key;
   }
 
 
@@ -83,10 +83,8 @@ export class Homepage implements OnInit {
   }
 
   handleJoinRoom(room: IRoom) {
-    this.roomService.selectRoom(room);
     this.showJoinModal.set(false);
-    this.socketService.handleJoinRoom(room.roomId);
-    this.router.navigate(['/participants']);
+    this.socketService.handleJoinRoom(room.key);
   }
 
 

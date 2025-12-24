@@ -45,7 +45,12 @@
   </div>
 </div>
 
-<app-modal [isOpen]="showJoinModal()" [showFooter]="false" title="Join Room" (onClose)="handleJoinClose()">
+<app-modal
+  [isOpen]="showJoinModal()"
+  [showFooter]="false"
+  (onClose)="handleJoinClose()"
+  title="Join Room"
+>
   <div class="modal-content rooms-list">
     <div class="rooms-intro">
       Select a room to join — tap Join on the right.
@@ -53,13 +58,16 @@
 
     <div *ngFor="let room of rooms$ | async; trackBy: trackByRoomId" class="room-card">
       <div class="room-info">
-        <p class="room-name">{{ room.roomName }}</p>
+        <p class="room-name">{{ room.data.roomName }}</p>
         <p class="room-id">
-          ID: <span>{{ room.roomId }}</span>
+          ID: <span>{{ room.key }}</span>
         </p>
       </div>
 
-      <button class="room-join-btn" (click)="handleJoinRoom(room)" [disabled]="room.gameStarted">
+      <button
+        class="room-join-btn"
+        (click)="handleJoinRoom(room)"
+      >
         Join
       </button>
     </div>

@@ -1,0 +1,26 @@
+<div class="leaderboard-container">
+  <div class="leaderboard-table">
+    <h1 class="winner-title">Winner of this Game is {{players[0].userName}}</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Player Name</th>
+          <th>Rank</th>
+          <th>WPM</th>
+          <th>Accuracy</th>
+          <th>Time Taken (in sec)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let player of players; trackBy: trackById">
+          <td>{{player.userName}}</td>
+          <td>{{player.ranking}}</td>
+          <td>{{player.wpm}}</td>
+          <td>{{player.accuracy}}</td>
+          <td>{{player.timetaken}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

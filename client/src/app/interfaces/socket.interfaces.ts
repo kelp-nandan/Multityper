@@ -19,19 +19,6 @@ export interface IPlayerCompleted {
     };
 }
 
-export interface ISocketRoomData {
-    key: string;
-    data: {
-        roomName: string;
-        players: {
-            userId: number;
-            userName: string;
-            isCreated: boolean;
-        }[];
-        isGameStarted: boolean;
-    };
-}
-
 
 export interface ICharacterState {
     char: string;

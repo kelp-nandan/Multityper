@@ -1,6 +1,5 @@
 import {
   Injectable,
-  ConflictException,
   UnauthorizedException,
   Inject,
 } from "@nestjs/common";
@@ -15,16 +14,11 @@ import { IUserProfile } from "./interfaces";
 
 @Injectable()
 export class UsersService {
-  private userRepository: UserRepository;
-
   constructor(
-    @Inject("SEQUELIZE")
-    private sequelize: Sequelize,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {
-    this.userRepository = new UserRepository(sequelize);
-  }
+    private userRepository: UserRepository,
+  ) {}
 
   async register(createUserDto: CreateUserDto): Promise<IUserProfile> {
     const { name, email, password } = createUserDto;

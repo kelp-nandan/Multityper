@@ -1,0 +1,152 @@
+@use '../styles/colors.scss' as colors;
+
+.leaderboard-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: colors.$primary-gradient;
+  padding: 1.5rem;
+
+  .leaderboard-table {
+    width: 100%;
+    max-width: 1000px;
+    background-color: colors.$white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    overflow-x: auto;
+    animation: fadeInUp 0.5s ease;
+
+    .winner-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(
+        90deg,
+        colors.$primary-gradient-start,
+        colors.$primary-gradient-end
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Inter', sans-serif;
+
+      thead {
+        background: linear-gradient(
+          90deg,
+          colors.$primary-gradient-start,
+          colors.$primary-gradient-end
+        );
+
+        th {
+          padding: 14px 16px;
+          text-align: left;
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: colors.$white;
+          white-space: nowrap;
+        }
+      }
+
+      tbody {
+        tr {
+          transition: all 0.25s ease;
+
+          &:nth-child(even) {
+            background-color: colors.$light-gray;
+          }
+
+          &:hover {
+            background-color: colors.$bg-lighter;
+            transform: scale(1.01);
+          }
+
+          /* Highlight winner row */
+          &:first-child {
+            background: rgba(colors.$success, 0.12);
+            border-left: 5px solid colors.$success;
+          }
+        }
+
+        td {
+          padding: 14px 16px;
+          font-size: 14px;
+          color: colors.$text-dark;
+          border-bottom: 1px solid colors.$light-border;
+          vertical-align: middle;
+
+          &:nth-child(2) {
+            font-weight: 700;
+            text-align: center;
+
+            &[data-rank='1'] {
+              color: #d4af37;
+            }
+            &[data-rank='2'] {
+              color: #c0c0c0;
+            }
+            &[data-rank='3'] {
+              color: #cd7f32;
+            }
+          }
+
+          &:nth-child(3) {
+            color: colors.$success;
+            font-weight: 600;
+          }
+
+          &:nth-child(4) {
+            color: colors.$primary-dark;
+            font-weight: 600;
+          }
+
+          &:nth-child(5) {
+            color: colors.$error-text;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+
+    .leaderboard-table {
+      padding: 16px;
+
+      .winner-title {
+        font-size: 1.2rem;
+      }
+
+      table {
+        th,
+        td {
+          font-size: 12px;
+          padding: 10px 12px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

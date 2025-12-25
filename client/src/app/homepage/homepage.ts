@@ -3,13 +3,11 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { IRoom } from '../interfaces/room.interface';
-import { Modal } from '../modal/modal';
 import { AuthService } from '../identity/services/auth.service';
+import { IRoom, ISequelizeUser, IUser } from '../interfaces';
+import { Modal } from '../modal/modal';
 import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
-import { IUser } from '../interfaces';
-
 
 @Component({
   selector: 'app-homepage',
@@ -17,16 +15,14 @@ import { IUser } from '../interfaces';
   templateUrl: './homepage.html',
   styleUrls: ['./homepage.scss'],
 })
-
 export class Homepage implements OnInit {
-
   rooms$!: Observable<IRoom[]>;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private socketService: SocketService,
-    private roomService: RoomService
+    private roomService: RoomService,
   ) {
     this.rooms$ = this.roomService.rooms$;
   }
@@ -38,8 +34,6 @@ export class Homepage implements OnInit {
   showCreateModal = signal(false);
   roomName = signal<string>('');
 
-  
-
   ngOnInit() {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -48,7 +42,7 @@ export class Homepage implements OnInit {
 
     const currentUser = this.authService.currentUser();
     if (currentUser) {
-      const cleanUser = (currentUser as any)?.dataValues || currentUser;
+      const cleanUser = (currentUser as ISequelizeUser)?.dataValues || currentUser;
       this.user.set(cleanUser);
     } else {
       this.fetchUserProfile();
@@ -56,9 +50,8 @@ export class Homepage implements OnInit {
   }
 
   trackByRoomId(index: number, room: IRoom) {
-    return room.roomId;
+    return room.key;
   }
-
 
   joinRoomModal() {
     this.showJoinModal.set(true);
@@ -83,12 +76,9 @@ export class Homepage implements OnInit {
   }
 
   handleJoinRoom(room: IRoom) {
-    this.roomService.selectRoom(room);
     this.showJoinModal.set(false);
-    this.socketService.handleJoinRoom(room.roomId);
-    this.router.navigate(['/participants']);
+    this.socketService.handleJoinRoom(room.key);
   }
-
 
   fetchUserProfile() {
     this.isLoading.set(true);
@@ -96,7 +86,8 @@ export class Homepage implements OnInit {
       next: (response) => {
         this.isLoading.set(false);
         if (response.data.user) {
-          const cleanUser = (response.data.user as any)?.dataValues || response.data.user;
+          const cleanUser =
+            (response.data.user as ISequelizeUser)?.dataValues || response.data.user;
           this.user.set(cleanUser);
         }
       },
@@ -104,15 +95,11 @@ export class Homepage implements OnInit {
         this.isLoading.set(false);
         console.error('Error fetching user profile:', error);
         this.authService.logout();
-      }
+      },
     });
   }
 
-  
-
   onLogout() {
-    if (confirm('Are you sure you want to logout?'))
-      this.authService.logout();
+    if (confirm('Are you sure you want to logout?')) this.authService.logout();
   }
-
 }

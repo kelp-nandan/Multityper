@@ -2,18 +2,12 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { ErrorKey } from "./constants/error-messages";
 
 export class ErrorHandler {
-  private static readonly errorMap = new Map<
-    string,
-    { status: number; message: string }
-  >([
+  private static readonly errorMap = new Map<string, { status: number; message: string }>([
     [
       ErrorKey.INVALID_CREDENTIALS,
       { status: HttpStatus.UNAUTHORIZED, message: "Invalid email or password" },
     ],
-    [
-      ErrorKey.EMAIL_EXISTS,
-      { status: HttpStatus.CONFLICT, message: "Email already exists" },
-    ],
+    [ErrorKey.EMAIL_EXISTS, { status: HttpStatus.CONFLICT, message: "Email already exists" }],
     [
       ErrorKey.VALIDATION_ERROR,
       {
@@ -28,14 +22,8 @@ export class ErrorHandler {
         message: "Invalid input format",
       },
     ],
-    [
-      ErrorKey.TOKEN_EXPIRED,
-      { status: HttpStatus.UNAUTHORIZED, message: "Token expired" },
-    ],
-    [
-      ErrorKey.INVALID_TOKEN,
-      { status: HttpStatus.UNAUTHORIZED, message: "Invalid token" },
-    ],
+    [ErrorKey.TOKEN_EXPIRED, { status: HttpStatus.UNAUTHORIZED, message: "Token expired" }],
+    [ErrorKey.INVALID_TOKEN, { status: HttpStatus.UNAUTHORIZED, message: "Invalid token" }],
   ]);
 
   static handleError(
@@ -55,10 +43,7 @@ export class ErrorHandler {
     }
 
     // Additional check for legacy or variations not yet in the enum
-    if (
-      errorMessage.includes("duplicate email") ||
-      errorMessage.includes("email already in use")
-    ) {
+    if (errorMessage.includes("duplicate email") || errorMessage.includes("email already in use")) {
       throw new HttpException("Email already exists", HttpStatus.CONFLICT);
     }
 

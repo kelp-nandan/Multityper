@@ -1,16 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { API_ENDPOINTS } from '../config/api-endpoints';
 
+import { API_ENDPOINTS } from '../config/api-endpoints';
 import {
-  IUser,
   IAuthResponse,
   ILoginRequest,
-  IRegisterRequest,
   ILogoutResponse,
-  IUsersListResponse,
-} from '../interfaces/auth.interfaces';
+  IRegisterRequest,
+  IUsersListResponse
+} from '../interfaces';
 
 @Injectable({
   providedIn: 'root',

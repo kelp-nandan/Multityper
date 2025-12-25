@@ -2,19 +2,17 @@ import {
     Body,
     Controller,
     Post,
-    ValidationPipe,
-    Res,
     Req,
+    Res,
+    ValidationPipe,
 } from "@nestjs/common";
 import type { Request, Response } from "express";
+import { ErrorHandler } from "../common/error-handler";
+import { ENV } from "../config/env.config";
+import { ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from '../constants';
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { LoginUserDto } from "../users/dto/login-user.dto";
 import { UsersService } from "../users/users.service";
-import { ENV } from "../config/env.config";
-import { ErrorHandler } from "../common/error-handler";
-
-const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 minutes
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 @Controller("api/auth")
 export class AuthController {

@@ -1,71 +1,125 @@
+import { Logger, UseGuards } from "@nestjs/common";
 import {
-  WebSocketGateway,
-  SubscribeMessage,
-  MessageBody,
   ConnectedSocket,
-  WebSocketServer
-} from '@nestjs/websockets';
-import { UseGuards, Logger } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from '../auth/guards/ws-jwt.guard';
-import { RedisService } from '../redis/redis.service';
-import { ParagraphService } from '../paragraph/paragraph.service';
-import { wsConfig } from '../config/wsConfig';
-import { WsException } from '@nestjs/websockets';
-import { v4 as uuid4 } from 'uuid';
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+  WsException,
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
+import { v4 as uuid4 } from "uuid";
 
-interface IPlayerStats {
-  wpm: number;
-  accuracy: number;
-  totalMistakes: number;
-  timeTakenSeconds: number;
-}
+import { WsJwtGuard } from "../auth/guards/ws-jwt.guard";
+import { wsConfig } from "../config/wsConfig";
+import { MAX_PROGRESS, MIN_PROGRESS, REDIRECT_DELAY } from "../constants";
+import { IPlayerStats } from "../interfaces";
+import { IPlayer } from "../interfaces/rooms.interface";
+import { ParagraphService } from "../paragraph/paragraph.service";
+import { RedisService } from "../redis/redis.service";
 
 @WebSocketGateway(wsConfig)
 @UseGuards(WsJwtGuard)
-export class RoomGateWay {
+export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(RoomGateWay.name);
 
   constructor(
     private redisService: RedisService,
-    private paragraphService: ParagraphService
+    private paragraphService: ParagraphService,
   ) { }
   @WebSocketServer()
   server: Server;
 
+  handleConnection(client: Socket) {
+    this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.log(`Client disconnected: ${client.id}`);
+    // Clean up user from rooms if needed
+  }
+
   @SubscribeMessage("create-room")
   async handleCreateRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomName: string },
+    @MessageBody() name: { roomName: string },
   ) {
     const roomId = uuid4();
     try {
-      await this.redisService.setRoom(roomId, {
-        roomName: data.roomName,
-        players: [
-          {
-            userId: client.data.user.id,
-            userName: client.data.user.name,
-            isCreated: true,
-          },
-        ],
-        isGameStarted: false,
+      await this.redisService.setRoom({
+        key: roomId,
+        data: {
+          roomName: name.roomName,
+          players: [
+            {
+              userId: client.data.user.id,
+              userName: client.data.user.name,
+              isCreated: true,
+            },
+          ],
+          gameStarted: false,
+        },
       });
       const newRoom = await this.redisService.getRoom(roomId);
-      client.join(roomId);
-      // Emit to creator only
+      await client.join(roomId);
       client.emit("room-created-by-me", {
         key: roomId,
         data: newRoom,
       });
-      // Emit to all other clients (just for room list update)
       client.broadcast.emit("new-room-available", {
         key: roomId,
         data: newRoom,
       });
     } catch (err) {
-      this.logger.error('Error creating room', err);
+      this.logger.error("Error creating room", err);
     }
+  }
+
+  @SubscribeMessage("leave-room")
+  async handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string },
+  ) {
+    try {
+      const roomData = await this.redisService.getRoom(data.roomId);
+      const userId = client.data.user.id;
+
+      const updatedplayers = roomData?.players.filter((player: IPlayer) => {
+        return player.userId !== userId;
+      });
+
+      roomData.players = updatedplayers;
+      await this.redisService.setRoom({
+        key: data.roomId,
+        data: roomData,
+      });
+
+      await client.leave(data.roomId);
+      client.emit("left-room-by-me");
+      client.to(data.roomId).emit("room-updated", { key: data.roomId, data: roomData });
+      this.server.emit("room-updated", roomData);
+    } catch (err) {
+      this.logger.error("Error creating room", err);
+    }
+  }
+
+  @SubscribeMessage("get-room")
+  async handleGetRooms(@MessageBody() data: { roomId: string }, @ConnectedSocket() client: Socket) {
+    const roomData = await this.redisService.getRoom(data.roomId);
+    if (!roomData) {
+      client.emit("join-room-error", {
+        message: "Room does not exist",
+      });
+      return;
+    }
+    if (!roomData.players.some((p: IPlayer) => p.userId === client.data.user.id)) {
+      client.emit("join-room-error", { message: "Not authorized" });
+      return;
+    }
+    await client.join(data.roomId);
+    client.emit("joined-room", { key: data.roomId, data: roomData });
   }
 
   @SubscribeMessage("join-room")
@@ -74,18 +128,25 @@ export class RoomGateWay {
       const user = client.data.user;
       const roomData = await this.redisService.getRoom(data.roomId);
       if (!roomData) {
-        client.emit("join-room-error", { message: "Room not found" });
+        client.emit("join-room-error", {
+          message: "Room does not exist",
+        });
         return;
       }
-
-      // Check if room is locked (game started or countdown started)
-      if (roomData.isGameStarted) {
-        client.emit("join-room-error", { message: "Cannot join room - game already started" });
+      if (roomData.players.length >= 5) {
+        client.emit("join-room-error", {
+          message: "Room is full. Maximum 5 players allowed",
+        });
         return;
       }
-
+      if (roomData.gameStarted) {
+        client.emit("join-room-error", {
+          message: "Game is already started in this room",
+        });
+        return;
+      }
       const players = roomData.players || [];
-      const existingIndex = players.findIndex(player => {
+      const existingIndex = players.findIndex((player: IPlayer) => {
         return player.userId === user.id || player.userName === user.name;
       });
       if (existingIndex === -1) {
@@ -103,12 +164,15 @@ export class RoomGateWay {
       }
 
       roomData.players = players;
-      await this.redisService.setRoom(data.roomId, roomData);
-      client.join(data.roomId);
+      await this.redisService.setRoom({
+        key: data.roomId,
+        data: roomData,
+      });
+      await client.join(data.roomId);
       client.emit("joined-room", { key: data.roomId, data: roomData });
-      this.server.emit("room-updated", { key: data.roomId, data: roomData });
+      client.to(data.roomId).emit("room-updated", { key: data.roomId, data: roomData });
     } catch (err) {
-      this.logger.error('Error joining room', err);
+      this.logger.error("Error joining room", err);
       client.emit("join-room-error", { message: "Failed to join room" });
     }
   }
@@ -125,8 +189,6 @@ export class RoomGateWay {
     client.emit("set-all-rooms", data);
   }
 
-
-
   @SubscribeMessage("countdown")
   async handleCountdown(@ConnectedSocket() client: Socket, @MessageBody() roomId: string) {
     const userId = client.data.user.id;
@@ -137,7 +199,7 @@ export class RoomGateWay {
     }
 
     const isCreator = roomData.players.some(
-      player => player.userId === userId && player.isCreated === true
+      (player: IPlayer) => player.userId === userId && player.isCreated === true,
     );
 
     if (!isCreator) {
@@ -145,11 +207,14 @@ export class RoomGateWay {
     }
 
     // Lock the room so no new players can join
-    roomData.isGameStarted = true;
-    await this.redisService.setRoom(roomId, roomData);
+    roomData.gameStarted = true;
+    await this.redisService.setRoom({
+      key: roomId,
+      data: roomData,
+    });
 
     // Emit lock-room event to all clients
-    this.server.emit('lock-room', { key: roomId, data: roomData });
+    this.server.emit("lock-room", { key: roomId, data: roomData });
 
     // Emit game-started to room participants to navigate them
     this.server.to(roomId).emit("game-started", { key: roomId, data: roomData });
@@ -167,29 +232,123 @@ export class RoomGateWay {
           this.server.to(roomId).emit("paragraph-ready", {
             roomId,
             paragraph: paragraph.content,
-            paragraphId: paragraph.id
+            paragraphId: paragraph.id,
           });
         }
       } catch (error) {
-        this.logger.error('Error fetching paragraph', error);
+        this.logger.error("Error fetching paragraph", error);
         this.server.to(roomId).emit("game-error", {
-          message: "Failed to load game content"
+          message: "Failed to load game content",
         });
       }
     }, 10000);
   }
 
-
   @SubscribeMessage("player-finished")
-  async handlePlayerFinished(@ConnectedSocket() client: Socket, @MessageBody() data: { stats: IPlayerStats }) {
+  async handlePlayerFinished(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string; stats: IPlayerStats },
+  ) {
     const userId = client.data.user.id;
+    const roomData = await this.redisService.getRoom(data.roomId);
 
-    // Broadcast the completion to other players for real-time leaderboards
-    // In the next step, we will store this in Redis to aggregate final results
-    this.server.emit("player-completed-run", {
-      userId,
-      userName: client.data.user.name,
-      stats: data.stats
-    });
+    if (!roomData) return;
+
+    const playerIndex = roomData.players.findIndex((p: IPlayer) => p.userId === userId);
+    if (playerIndex !== -1) {
+      // Initialize stats object if it doesn't exist
+      if (!roomData.players[playerIndex].stats) {
+        roomData.players[playerIndex].stats = {};
+      }
+
+      // Update the player stats and mark as finished
+      roomData.players[playerIndex].stats = {
+        ...roomData.players[playerIndex].stats,
+        ...data.stats,
+        finished: true,
+        progress: MAX_PROGRESS,
+      };
+
+      await this.redisService.setRoom({ key: data.roomId, data: roomData });
+
+      // Broadcast this individual completion for the live progress bars
+      this.server.to(data.roomId).emit("room-updated", { key: data.roomId, data: roomData });
+
+      // Check if every player in that room has finished
+      const allFinished = roomData.players.every((p: IPlayer) => p.stats?.finished === true);
+
+      if (allFinished) {
+        // All players finished - emit event and set up redirect
+        this.server.to(data.roomId).emit("all-players-finished", {
+          message: "All players have completed! Redirecting to leaderboard in 5 seconds...",
+          roomId: data.roomId,
+          players: roomData.players,
+        });
+
+        // Redirect after 5 seconds
+        setTimeout(() => {
+          this.server.to(data.roomId).emit("redirect-to-leaderboard", {
+            roomId: data.roomId,
+            finalResults: roomData.players,
+          });
+        }, REDIRECT_DELAY);
+      } else {
+        // Still waiting for other players
+        const remainingPlayers = roomData.players.filter((p: IPlayer) => !p.stats?.finished).length;
+        this.server.to(data.roomId).emit("player-finished", {
+          completedUserId: userId,
+          waitingCount: remainingPlayers,
+        });
+      }
+    }
+  }
+
+  @SubscribeMessage("live-progress")
+  async handleLiveProgress(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { progress: number; wpm?: number; accuracy?: number; roomId: string },
+  ) {
+    try {
+      const userId = client.data.user.id;
+
+      const roomData = await this.redisService.getRoom(data.roomId);
+      if (!roomData) {
+        throw new WsException("Room does not exist");
+      }
+
+      const playerIndex = roomData.players.findIndex((p: IPlayer) => p.userId === userId);
+
+      if (playerIndex === -1) {
+        throw new WsException("Not authorized for this room");
+      }
+
+      if (data.progress < MIN_PROGRESS || data.progress > MAX_PROGRESS) {
+        throw new WsException(`Progress must be between ${MIN_PROGRESS} and ${MAX_PROGRESS}`);
+      }
+
+      if (!roomData.players[playerIndex].stats) {
+        roomData.players[playerIndex].stats = {};
+      }
+
+      roomData.players[playerIndex].stats.progress = data.progress;
+      if (data.wpm !== undefined) {
+        roomData.players[playerIndex].stats.wpm = data.wpm;
+      }
+      if (data.accuracy !== undefined) {
+        roomData.players[playerIndex].stats.accuracy = data.accuracy;
+      }
+
+      await this.redisService.setRoom({
+        key: data.roomId,
+        data: roomData,
+      });
+
+      this.server.to(data.roomId).emit("room-updated", {
+        key: data.roomId,
+        data: roomData,
+      });
+    } catch (error) {
+      // Error handling can be added here if needed
+    }
   }
 }

@@ -1,0 +1,28 @@
+<div class="leaderboard-container">
+  <h1>Leaderboard</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Player</th>
+        <th>WPM</th>
+        <th>Accuracy</th>
+        <th>Time(s)</th>
+        <th>Wrong</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of players; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ player.username }}</td>
+        <td>{{ player.wmp }}</td>
+        <td>{{ player.accuracy }}%</td>
+        <td>{{ player.time }}</td>
+        <td>{{ player.Total_Wrong }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn" (click)="goHome()">Home</button>
+</div>

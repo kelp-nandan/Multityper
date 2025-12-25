@@ -24,8 +24,8 @@ export class WsJwtGuard implements CanActivate {
     }
 
     const token = match[1];
-    if(!token) {
-      throw new UnauthorizedException('Authentication token not provided');
+    if (!token) {
+      throw new UnauthorizedException("Authentication token not provided");
     }
 
     try {
@@ -33,12 +33,12 @@ export class WsJwtGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      if(!payload?.sub) {
+      if (!payload?.sub) {
         throw new UnauthorizedException("Invalid token payload");
       }
       const user = await this.userRepository.findById(payload.sub);
-      if(!user) {
-        throw new UnauthorizedException('User not found');
+      if (!user) {
+        throw new UnauthorizedException("User not found");
       }
 
       client.data.user = {

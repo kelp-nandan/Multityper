@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { IRoom } from '../interfaces/room.interface'
+
+import { IRoom } from '../interfaces';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoomService {
   private roomsSubject = new BehaviorSubject<IRoom[]>([]);
@@ -16,19 +17,13 @@ export class RoomService {
     this.roomsSubject.next(rooms);
   }
 
-
-
-
   addRoom(room: IRoom) {
     const currentRooms = this.roomsSubject.value;
     this.roomsSubject.next([...currentRooms, room]);
-    this.selectRoom(room);
   }
 
   removeRoom(roomId: string) {
-    const filtered = this.roomsSubject.value.filter(
-      (room) => room.roomId !== roomId
-    );
+    const filtered = this.roomsSubject.value.filter((room) => room.key !== roomId);
     this.roomsSubject.next(filtered);
   }
 
@@ -46,16 +41,13 @@ export class RoomService {
 
   updateRoom(updatedRoom: IRoom) {
     const currentRooms = this.roomsSubject.value;
-    const index = currentRooms.findIndex(r => r.roomId === updatedRoom.roomId);
-    if (index === -1) {
-      console.warn('RoomService: Room not found for update:', updatedRoom.roomId);
-      return;
-    }
-    const clonedRoom: IRoom = JSON.parse(JSON.stringify(updatedRoom));
-    const newRooms = currentRooms.map(room =>
-      room.roomId === updatedRoom.roomId ? clonedRoom : room
+    const newRooms = currentRooms.map((room) =>
+      room.key === updatedRoom.key ? { ...updatedRoom } : room,
     );
     this.roomsSubject.next(newRooms);
-    this.selectedRoomSubject.next(clonedRoom);
+    const currentSelected = this.selectedRoomSubject.value;
+    if (currentSelected && currentSelected.key === updatedRoom.key) {
+      this.selectedRoomSubject.next({ ...updatedRoom });
+    }
   }
 }

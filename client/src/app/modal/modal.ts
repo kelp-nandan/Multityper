@@ -27,4 +27,3 @@ export class Modal {
     this.isOpen = true;
   }
 }
-

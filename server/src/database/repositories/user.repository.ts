@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
-import { IUser, IUserProfile, ICreateUserData } from "../../users/interfaces";
 import { User } from "../../models";
+import { ICreateUserData, IUser, IUserProfile } from "../../users/interfaces";
 
 export class UserRepository {
   constructor(private sequelize: Sequelize) {
@@ -32,15 +32,7 @@ export class UserRepository {
   async findByEmail(email: string): Promise<IUserProfile | null> {
     const user = await User.findOne({
       where: { email },
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
     });
     return user ? user.toProfile() : null;
   }
@@ -48,15 +40,7 @@ export class UserRepository {
   async findById(userId: number): Promise<IUserProfile | null> {
     const user = await User.findOne({
       where: { id: userId },
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
     });
     return user ? user.toProfile() : null;
   }
@@ -79,18 +63,10 @@ export class UserRepository {
 
   async findAll(): Promise<IUserProfile[]> {
     const users = await User.findAll({
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
       order: [["created_at", "DESC"]],
     });
-    return users.map((user) => user.toProfile());
+    return users.map(user => user.toProfile());
   }
 
   async getTotalCount(): Promise<number> {
@@ -106,15 +82,7 @@ export class UserRepository {
     });
 
     const updatedUser = await User.findByPk(userId, {
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
     });
 
     return updatedUser ? updatedUser.toProfile() : null;
@@ -134,17 +102,9 @@ export class UserRepository {
       where: {
         id: userIds,
       },
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
       order: [["created_at", "DESC"]],
     });
-    return users.map((user) => user.toProfile());
+    return users.map(user => user.toProfile());
   }
 }

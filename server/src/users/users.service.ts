@@ -1,30 +1,19 @@
-import {
-  Injectable,
-  ConflictException,
-  UnauthorizedException,
-  Inject,
-} from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Sequelize } from "sequelize";
+import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { UserRepository } from "../database/repositories";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
-import { UserRepository } from "../database/repositories";
 import { IUserProfile } from "./interfaces";
 
 @Injectable()
 export class UsersService {
-  private userRepository: UserRepository;
-
   constructor(
-    @Inject("SEQUELIZE")
-    private sequelize: Sequelize,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {
-    this.userRepository = new UserRepository(sequelize);
-  }
+    private userRepository: UserRepository,
+  ) {}
 
   async register(createUserDto: CreateUserDto): Promise<IUserProfile> {
     const { name, email, password } = createUserDto;
@@ -104,9 +93,7 @@ export class UsersService {
     return this.jwtService.sign(refreshPayload, { expiresIn: "7d" });
   }
 
-  async refreshAccessToken(
-    refreshToken: string,
-  ): Promise<{ accessToken: string }> {
+  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
       // Verify the refresh token JWT
       const decoded = this.jwtService.verify(refreshToken);

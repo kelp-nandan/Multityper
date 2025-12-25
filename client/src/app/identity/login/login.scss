@@ -1,5 +1,5 @@
-@use '../../styles/colors.scss' as colors;
-@use '../../styles/typography.scss' as typography;
+@use '../../styles/colors.scss' as *;
+@use '../../styles/typography.scss' as *;
 
 /* Container and Card Styling */
 .auth-container {
@@ -7,11 +7,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    colors.$primary-gradient-start 0%,
-    colors.$primary-gradient-end 100%
-  );
+  background: linear-gradient(135deg,
+      $primary-gradient-start 0%,
+      $primary-gradient-end 100%);
   padding: 1.25rem; // 20px
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -21,8 +19,8 @@
   border-radius: 1rem; // 16px
   padding: 2.5rem; // 40px
   box-shadow:
-    0 1.25rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.1),
-    0 0.625rem 0.625rem -0.3125rem rgba(0, 0, 0, 0.04);
+    0 1.25rem 1.5625rem -0.3125rem $black-alpha-10,
+    0 0.625rem 0.625rem -0.3125rem $black-alpha-04;
   width: 100%;
   max-width: 26.25rem; // 420px
   animation: slideIn 0.4s ease-out;
@@ -46,14 +44,14 @@
   margin-bottom: 2rem; // 32px
 
   h2 {
-    color: colors.$header;
+    color: $header;
     font-size: 2rem; // 32px
-    font-weight: typography.$font-weight-700;
+    font-weight: $font-weight-700;
     margin: 0 0 0.5rem 0; // 8px
   }
 
   p {
-    color: colors.$text-muted;
+    color: $text-muted;
     font-size: 1rem; // 16px
     margin: 0;
   }
@@ -65,18 +63,18 @@
   border-radius: 0.5rem; // 8px
   margin-bottom: 1.5rem; // 24px
   font-size: 0.875rem; // 14px
-  font-weight: typography.$font-weight-500;
+  font-weight: $font-weight-500;
 
   &-success {
-    background-color: colors.$success-bg;
-    color: colors.$success-text;
-    border: 0.0625rem solid colors.$success-border; // 1px
+    background-color: $success-bg;
+    color: $success-text;
+    border: 0.0625rem solid $success-border; // 1px
   }
 
   &-error {
-    background-color: colors.$error-bg;
-    color: colors.$error-text;
-    border: 0.0625rem solid colors.$error-border; // 1px
+    background-color: $error-bg;
+    color: $error-text;
+    border: 0.0625rem solid $error-border; // 1px
   }
 }
 
@@ -91,46 +89,46 @@
   label {
     display: block;
     font-size: 0.875rem; // 14px
-    font-weight: typography.$font-weight-500;
-    color: colors.$label;
+    font-weight: $font-weight-500;
+    color: $label;
     margin-bottom: 0.5rem; // 8px
   }
 
   input {
     width: 100%;
     padding: 0.75rem; // 12px
-    border: 0.125rem solid colors.$input-border; // 2px
+    border: 0.125rem solid $input-border; // 2px
     border-radius: 0.5rem; // 8px
     font-size: 1rem; // 16px
     transition: all 0.2s ease-in-out;
     box-sizing: border-box;
-    background-color: #ffffff;
+    background-color: $white;
 
     &:focus {
       outline: none;
-      border-color: colors.$primary;
-      box-shadow: 0 0 0 0.1875rem colors.$input-focus-shadow; // 3px
+      border-color: $primary;
+      box-shadow: 0 0 0 0.1875rem $input-focus-shadow; // 3px
     }
 
     &.error {
-      border-color: colors.$error;
+      border-color: $error;
 
       &:focus {
-        border-color: colors.$error;
-        box-shadow: 0 0 0 0.1875rem colors.$input-error-shadow; // 3px
+        border-color: $error;
+        box-shadow: 0 0 0 0.1875rem $input-error-shadow; // 3px
       }
     }
 
     &::placeholder {
-      color: colors.$input-placeholder;
+      color: $input-placeholder;
     }
 
     &:hover {
-      border-color: colors.$input-placeholder;
+      border-color: $input-placeholder;
     }
 
     &:valid:not(:placeholder-shown) {
-      border-color: colors.$success;
+      border-color: $success;
     }
   }
 }
@@ -138,10 +136,10 @@
 /* Error Text */
 .error-text {
   display: block;
-  color: colors.$error;
+  color: $error;
   font-size: 0.75rem; // 12px
   margin-top: 0.25rem; // 4px
-  font-weight: typography.$font-weight-500;
+  font-weight: $font-weight-500;
 }
 
 /* Button Styling */
@@ -151,7 +149,7 @@
   border: none;
   border-radius: 0.5rem; // 8px
   font-size: 1rem; // 16px
-  font-weight: typography.$font-weight-600;
+  font-weight: $font-weight-600;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   display: flex;
@@ -160,13 +158,13 @@
   gap: 0.5rem; // 8px
 
   &-primary {
-    background-color: colors.$primary;
+    background-color: $primary;
     color: white;
 
     &:hover:not(:disabled) {
-      background-color: colors.$primary-dark;
+      background-color: $primary-dark;
       transform: translateY(-0.0625rem); // 1px
-      box-shadow: 0 0.25rem 0.75rem rgba(99, 102, 241, 0.3); // 4px 12px
+      box-shadow: 0 0.25rem 0.75rem $input-focus-shadow; // 4px 12px
     }
 
     &:active:not(:disabled) {
@@ -175,7 +173,7 @@
 
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 0.1875rem rgba(99, 102, 241, 0.3); // 3px
+      box-shadow: 0 0 0 0.1875rem $input-focus-shadow; // 3px
     }
   }
 
@@ -184,7 +182,7 @@
     cursor: not-allowed;
     transform: none;
 
-    .spinner + span {
+    .spinner+span {
       opacity: 0.7;
     }
   }
@@ -210,10 +208,10 @@
 .auth-toggle {
   text-align: center;
   padding-top: 1rem; // 16px
-  border-top: 0.0625rem solid colors.$toggle-border; // 1px
+  border-top: 0.0625rem solid $toggle-border; // 1px
 
   p {
-    color: colors.$text-muted;
+    color: $text-muted;
     font-size: 0.875rem; // 14px
     margin: 0;
   }
@@ -222,16 +220,16 @@
 .link-btn {
   background: none;
   border: none;
-  color: colors.$primary;
+  color: $primary;
   cursor: pointer;
   font-size: 0.875rem; // 14px
-  font-weight: typography.$font-weight-600;
+  font-weight: $font-weight-600;
   text-decoration: none;
   margin-left: 0.25rem; // 4px
   transition: color 0.2s ease-in-out;
 
   &:hover {
-    color: colors.$primary-dark;
+    color: $primary-dark;
     text-decoration: underline;
   }
 
@@ -243,6 +241,7 @@
 
 /* Responsive Design */
 @media (max-width: 40rem) {
+
   // 640px
   .auth-container {
     padding: 1rem; // 16px
@@ -259,6 +258,7 @@
 }
 
 @media (max-width: 30rem) {
+
   // 480px
   .auth-card {
     padding: 1.5rem 1rem; // 24px 16px

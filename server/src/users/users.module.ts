@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { JwtModule, JwtModuleOptions } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UsersService } from "./users.service";
-import { UsersController } from "./users.controller";
+import { JwtModule, JwtModuleOptions } from "@nestjs/jwt";
 import { DatabaseModule } from "src/database/database.module";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
 
 @Module({
   imports: [
@@ -14,8 +14,8 @@ import { DatabaseModule } from "src/database/database.module";
         return {
           secret: configService.get<string>("jwt.secret"),
           signOptions: {
-            expiresIn: configService.get<string>("jwt.expiresIn") as any,
-          },
+            expiresIn: configService.get<string>("jwt.expiresIn") || "15m",
+          } as any,
         };
       },
       inject: [ConfigService],
@@ -25,4 +25,4 @@ import { DatabaseModule } from "src/database/database.module";
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

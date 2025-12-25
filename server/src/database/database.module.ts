@@ -1,17 +1,18 @@
 import { Module } from "@nestjs/common";
+import { Sequelize } from "sequelize";
 import { databaseProviders } from "../config/database.config";
-import { UserRepository } from "./repositories/user.repository";
 import { ParagraphRepository } from "./repositories/paragraph.repository";
+import { UserRepository } from "./repositories/user.repository";
 
 const repositoryProviders = [
   {
     provide: UserRepository,
-    useFactory: (sequelize) => new UserRepository(sequelize),
+    useFactory: (sequelize: Sequelize) => new UserRepository(sequelize),
     inject: ["SEQUELIZE"],
   },
   {
     provide: ParagraphRepository,
-    useFactory: (sequelize) => new ParagraphRepository(sequelize),
+    useFactory: (sequelize: Sequelize) => new ParagraphRepository(sequelize),
     inject: ["SEQUELIZE"],
   },
 ];

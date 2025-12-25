@@ -1,10 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { Observable, Subscription, interval } from 'rxjs';
+import { ISequelizeUser, PROFILE_CHECK_TIMEOUT, TOKEN_CHECK_INTERVAL } from '../../interfaces';
+import { IAuthResponse, IRegisterRequest, IUser } from '../../interfaces/auth.interfaces';
 import { HttpService } from '../../services/http.service';
-import { IUser, IAuthResponse, IRegisterRequest } from '../../interfaces/auth.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -41,13 +42,13 @@ export class AuthService {
       const response = (await Promise.race([
         this.httpService.getUserProfile().toPromise(),
         new Promise<IAuthResponse>((_, reject) =>
-          setTimeout(() => reject(new Error('Profile check timeout')), 2000),
+          setTimeout(() => reject(new Error('Profile check timeout')), PROFILE_CHECK_TIMEOUT),
         ),
       ])) as IAuthResponse;
 
       if (response?.data?.user) {
         // Handle Sequelize objects by extracting dataValues if present
-        const cleanUser = (response.data.user as any)?.dataValues || response.data.user;
+        const cleanUser = (response.data.user as ISequelizeUser)?.dataValues || response.data.user;
         this.currentUser.set(cleanUser);
         return true;
       }
@@ -81,7 +82,7 @@ export class AuthService {
 
   setUserData(user: IUser) {
     // Handle Sequelize objects by extracting dataValues if present
-    const cleanUser = (user as any)?.dataValues || user;
+    const cleanUser = (user as ISequelizeUser)?.dataValues || user;
     this.currentUser.set(cleanUser);
   }
 
@@ -104,7 +105,7 @@ export class AuthService {
   }
 
   private startTokenExpiryCheck() {
-    this.tokenCheckSubscription = interval(5 * 60000).subscribe(async () => {
+    this.tokenCheckSubscription = interval(TOKEN_CHECK_INTERVAL).subscribe(async () => {
       if (this.isAuthenticated()) {
         const refreshed = await this.refreshToken();
         if (!refreshed) {

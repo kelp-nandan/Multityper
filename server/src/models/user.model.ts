@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { IUser, ICreateUserData, IUserProfile } from "../users/interfaces";
+import { ICreateUserData, IUser, IUserProfile } from "../users/interfaces";
 
 export class User extends Model<IUser, ICreateUserData> implements IUser {
   declare id: number;

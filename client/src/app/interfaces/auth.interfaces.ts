@@ -23,10 +23,8 @@ export interface IRegisterRequest {
   password: string;
 }
 
-
 export interface ILogoutResponse {
   message: string;
-  success: boolean;
 }
 
 export interface IUsersListResponse {

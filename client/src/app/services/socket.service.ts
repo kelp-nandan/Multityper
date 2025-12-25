@@ -1,146 +1,113 @@
 import { Injectable, NgZone } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
-import { IRoom } from '../interfaces/room.interface';
-import { ISocketRoomData } from '../interfaces';
-import { RoomService } from './room.service';
-import { SERVER_URL } from '../constants/index';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
+
+import { SERVER_URL } from '../constants/index';
+import { IRoom } from '../interfaces';
+import { RoomService } from './room.service';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: Socket;
 
-  constructor(private roomService: RoomService, private ngZone: NgZone, private router: Router) {
+  constructor(
+    private roomService: RoomService,
+    private ngZone: NgZone,
+    private router: Router,
+  ) {
     this.socket = io(SERVER_URL, {
-      withCredentials: true
+      withCredentials: true,
     });
 
     this.socket.on('connect', () => {
       this.handleGetAllRooms();
-
-      // PERSISTENCE: Rejoin the room if the page was refreshed
-      const savedRoomId = localStorage.getItem('activeRoomId');
-      if (savedRoomId) {
-        this.handleJoinRoom(savedRoomId);
-      }
     });
 
     this.listenEvents();
   }
 
-  private convertSocketDataToRoom(item: ISocketRoomData): IRoom {
-    return {
-      roomId: item.key,
-      roomName: item.data.roomName,
-      players: item.data.players,
-      gameStarted: item.data.isGameStarted
-    };
-  }
-
   private listenEvents() {
-    this.socket.on('set-all-rooms', (data: ISocketRoomData[]) => {
+    this.socket.on('set-all-rooms', (data: IRoom[]) => {
       this.ngZone.run(() => {
-        const rooms: IRoom[] = data.map(item => this.convertSocketDataToRoom(item));
+        const rooms: IRoom[] = data;
         this.roomService.setRooms(rooms);
       });
     });
 
-    // When I create a room, select it and navigate
-    this.socket.on('room-created-by-me', (item: ISocketRoomData) => {
+    this.socket.on('room-created-by-me', (item: IRoom) => {
       this.ngZone.run(() => {
-        const room: IRoom = this.convertSocketDataToRoom(item);
+        const room: IRoom = item;
         this.roomService.addRoom(room);
         this.roomService.selectRoom(room);
-
-        // Save to localStorage to prevent losing room on refresh
-        localStorage.setItem('activeRoomId', room.roomId);
-
-        this.router.navigate(['/participants']);
+        this.router.navigate([`/rooms/${item.key}`]);
       });
     });
 
-    // When someone else creates a room, just add to list
-    this.socket.on('new-room-available', (item: ISocketRoomData) => {
+    this.socket.on('left-room-by-me', () => {
+      this.roomService.clearSelectRoom();
+      this.router.navigate(['/homepage']);
+    });
+
+    this.socket.on('new-room-available', (item: IRoom) => {
       this.ngZone.run(() => {
-        const room: IRoom = this.convertSocketDataToRoom(item);
+        const room: IRoom = item;
         this.roomService.addRoom(room);
       });
     });
 
-    this.socket.on('room-updated', (item: ISocketRoomData) => {
+    this.socket.on('room-updated', (item: IRoom) => {
       this.ngZone.run(() => {
-        let updatedRoom: IRoom;
-        if (item.key && item.data) {
-          updatedRoom = this.convertSocketDataToRoom(item);
-        } else {
-          updatedRoom = item as unknown as IRoom;
-        }
+        let updatedRoom: IRoom = item;
         this.roomService.updateRoom(updatedRoom);
       });
     });
 
-    this.socket.on('joined-room', (item: ISocketRoomData) => {
+    this.socket.on('joined-room', (item: IRoom) => {
       this.ngZone.run(() => {
-        const room: IRoom = this.convertSocketDataToRoom(item);
+        const room: IRoom = item;
         this.roomService.selectRoom(room);
-
-        // Save to localStorage to prevent losing room on refresh
-        localStorage.setItem('activeRoomId', room.roomId);
-
-        this.router.navigate(['/participants']);
-      });
-    });
-
-    this.socket.on('join-room-error', (data: { message: string }) => {
-      this.ngZone.run(() => {
-        console.error('Failed to join room:', data.message);
-        alert(data.message);
+        this.router.navigate([`/rooms/${item.key}`]);
       });
     });
 
     this.socket.on('room-destroyed', (data: { roomId: string }) => {
       this.ngZone.run(() => {
         const currentRoom = this.roomService.getCurrentRoom();
-        if (currentRoom && currentRoom.roomId === data.roomId) {
+        if (currentRoom && currentRoom.key === data.roomId) {
           this.roomService.clearSelectRoom();
-
-          // Clear persistence on room destruction
-          localStorage.removeItem('activeRoomId');
-
           this.router.navigate(['/homepage']);
         }
         this.roomService.removeRoom(data.roomId);
       });
     });
 
-    this.socket.on('game-started', (item: ISocketRoomData) => {
+    this.socket.on('game-started', (item: IRoom) => {
       this.ngZone.run(() => {
         let updatedRoom: IRoom;
-        if (item.key && item.data) {
-          updatedRoom = this.convertSocketDataToRoom(item);
-        } else {
-          updatedRoom = item as unknown as IRoom;
-        }
+        updatedRoom = item;
         this.roomService.updateRoom(updatedRoom);
         this.router.navigate(['/game-dashboard']);
       });
     });
 
-    this.socket.on('lock-room', (item: ISocketRoomData) => {
+    this.socket.on('lock-room', (item: IRoom) => {
       this.ngZone.run(() => {
         const currentRoom = this.roomService.getCurrentRoom();
-        const roomId = item.key || (item as any).roomId;
-        if (!currentRoom || currentRoom.roomId !== roomId) {
+        const roomId = item.key || (item as IRoom & { roomId?: string }).roomId;
+        if (roomId && (!currentRoom || currentRoom.key !== roomId)) {
           this.roomService.removeRoom(roomId);
         } else {
           let updatedRoom: IRoom;
-          if (item.key && item.data) {
-            updatedRoom = this.convertSocketDataToRoom(item);
-          } else {
-            updatedRoom = item as unknown as IRoom;
-          }
+          updatedRoom = item;
           this.roomService.updateRoom(updatedRoom);
         }
+      });
+    });
+
+    this.socket.on('join-room-error', (data: { message: string }) => {
+      this.ngZone.run(() => {
+        alert(data.message);
       });
     });
   }
@@ -151,6 +118,10 @@ export class SocketService {
 
   handleJoinRoom(roomId: string) {
     this.socket.emit('join-room', { roomId });
+  }
+
+  handleLeaveRoom(roomId: string) {
+    this.socket.emit('leave-room', { roomId });
   }
 
   handleDestroyRoom(roomId: string) {
@@ -165,6 +136,13 @@ export class SocketService {
     this.socket.emit('countdown', roomId);
   }
 
+  handleRestoreRoom(roomId: string) {
+    this.socket.emit('get-room', { roomId });
+  }
+
+  handleLiveProgress(roomId: string, percentage: number, wpm: number = 0, accuracy: number = 0) {
+    this.socket.emit('live-progress', { progress: percentage, wpm, accuracy, roomId });
+  }
   // Expose socket.on method for components with generic typing
   on<T = unknown>(event: string, callback: (data: T) => void): void {
     this.socket.on(event, (data: T) => {
@@ -180,5 +158,14 @@ export class SocketService {
   // General emit method for components with optional generic typing
   emit<T = unknown>(event: string, data?: T): void {
     this.socket.emit(event, data);
+  }
+
+  // Observable-based listen method
+  listen<T = unknown>(event: string) {
+    return new Observable<T>((observer) => {
+      this.socket.on(event, (data: T) => {
+        this.ngZone.run(() => observer.next(data));
+      });
+    });
   }
 }

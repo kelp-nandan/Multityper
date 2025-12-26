@@ -1,141 +1,165 @@
 @use '../../styles/colors' as *;
 @use '../../styles/typography' as *;
 
+
 .lobby-container {
-  background: $primary-gradient;
+  min-height: 100vh;
+  padding: var(--spacing-20);
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1.875rem;
-  padding: 1.25rem;
-  height: 100vh;
-  box-sizing: border-box;
+  gap: var(--spacing-32);
+
+  background: var(--primary-gradient);
+
 
   .game-title {
-    font-size: 3rem;
+    font-size: var(--font-size-48);
     font-weight: 800;
+    color: var(--white);
     text-align: center;
-    color: $white;
-    margin-bottom: 0.625rem;
+    margin-bottom: var(--spacing-10);
   }
 
   .game-quote {
-    font-size: 1.125rem;
-    color: $light-gray-text;
+    font-size: var(--font-size-18);
+    color: var(--light-gray-text);
     text-align: center;
     font-style: italic;
-    margin-bottom: 1.25rem;
-  }
-}
-
-.players-container {
-  background-color: $white;
-  border: 0.0625rem solid $light-border;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  width: 100%;
-  max-width: 37.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  box-shadow: 0 0.5rem 1.25rem $primary-alpha-15;
-  box-sizing: border-box;
-
-  .player-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    background: linear-gradient(180deg, $white, $light-gray);
-    border: 0.0625rem solid $border-gray;
-    transition: $transition-transform;
-
-    &:hover {
-      transform: translateY(-0.125rem);
-      box-shadow: 0 0.375rem 1.125rem $primary-alpha-25;
-    }
-
-    .leave-room-btn {
-      background-color: red;
-      width: fit-content;
-      color: $white;
-      padding: 5px;
-      border-radius: 5px;
-      border: none;
-    }
+    margin-bottom: var(--spacing-20);
   }
 
-  .player-info {
+
+  .players-container {
+    width: 100%;
+    max-width: var(--size-640);
+    padding: var(--spacing-20);
+    box-sizing: border-box;
+
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    gap: var(--spacing-12);
 
-    span {
-      font-weight: 600;
-      color: $primary-gradient-end;
-    }
-  }
+    background: var(--white);
+    border: var(--spacing-2) solid var(--light-border);
+    border-radius: var(--radius-12);
+    box-shadow: 0 var(--spacing-8) var(--spacing-20) var(--primary-alpha-15);
 
-  .players-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 0.9375rem;
 
-    .button-primary {
-      background: $primary-gradient;
-      color: $white;
-      border: none;
-      padding: 0.625rem 1.375rem;
-      border-radius: 0.375rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: $transition-smooth;
+    .player-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      padding: var(--spacing-12) var(--spacing-16);
+      border-radius: var(--radius-8);
+
+      background: linear-gradient(180deg, var(--white), var(--light-gray));
+      border: var(--spacing-2) solid var(--border-gray);
+      transition: var(--transition-transform);
 
       &:hover {
-        opacity: 0.9;
-        transform: translateY(-0.0625rem);
+        transform: translateY(-var(--spacing-2));
+        box-shadow: 0 var(--spacing-6) var(--spacing-18) var(--primary-alpha-25);
+      }
+
+      .player-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+
+        span {
+          font-weight: 600;
+          color: var(--primary-gradient-end);
+        }
+      }
+
+      .leave-room-btn {
+        background-color: red;
+        color: var(--white);
+        padding: var(--spacing-4) var(--spacing-10);
+        border-radius: var(--radius-4);
+        border: none;
+        cursor: pointer;
       }
     }
 
-    .button-secondary {
-      background-color: $light-border;
-      color: $primary-gradient-end;
-      border: none;
-      padding: 0.625rem 1.375rem;
-      border-radius: 0.375rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: $transition-smooth;
+    .players-footer {
+      margin-top: var(--spacing-16);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-12);
 
-      &:hover {
-        background-color: $border-gray;
+      .button-primary {
+        background: var(--primary-gradient);
+        color: var(--white);
+        border: none;
+        padding: var(--spacing-10) var(--spacing-24);
+        border-radius: var(--radius-6);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+
+        &:hover {
+          opacity: 0.9;
+          transform: translateY(-var(--spacing-2));
+        }
+      }
+
+      .button-secondary {
+        background-color: var(--light-border);
+        color: var(--primary-gradient-end);
+        border: none;
+        padding: var(--spacing-10) var(--spacing-24);
+        border-radius: var(--radius-6);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+
+        &:hover {
+          background-color: var(--border-gray);
+        }
       }
     }
-  }
 
-  .waiting-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 1.375rem;
-    background: linear-gradient(90deg, $primary-alpha-08, $primary-end-alpha-08);
-    border-radius: 0.5rem;
-    border: 0.125rem solid $primary-gradient-start;
-    width: 100%;
 
-    p {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: $primary-gradient-start;
-      text-align: center;
-      animation: pulse 2s infinite;
+    .waiting-message {
+      width: 100%;
+      padding: var(--spacing-16) var(--spacing-24);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: linear-gradient(90deg,
+          var(--primary-alpha-08),
+          var(--primary-end-alpha-08));
+
+      border-radius: var(--radius-8);
+      border: var(--spacing-2) solid var(--primary-gradient-start);
+
+      p {
+        margin: 0;
+        font-size: var(--font-size-16);
+        font-weight: 600;
+        color: var(--primary-gradient-start);
+        text-align: center;
+        animation: pulse 2s infinite;
+      }
     }
   }
 }
+
+
+.no-room-message {
+  margin-top: var(--spacing-40);
+  text-align: center;
+  color: var(--primary-gradient-end);
+}
+
 
 @keyframes pulse {
 
@@ -152,25 +176,19 @@
 @media (max-width: 37.5rem) {
   .lobby-container {
     .game-title {
-      font-size: 2.25rem;
+      font-size: var(--font-size-40);
     }
 
     .game-quote {
-      font-size: 1rem;
+      font-size: var(--font-size-16);
+    }
+
+    .players-container {
+      padding: var(--spacing-16);
+
+      .player-card {
+        padding: var(--spacing-10) var(--spacing-12);
+      }
     }
   }
-
-  .players-container {
-    padding: 1rem;
-
-    .player-card {
-      padding: 0.625rem 0.75rem;
-    }
-  }
-}
-
-.no-room-message {
-  text-align: center;
-  color: $primary-gradient-end;
-  margin-top: 2.5rem;
 }

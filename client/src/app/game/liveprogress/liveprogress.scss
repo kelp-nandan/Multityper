@@ -1,105 +1,114 @@
 @use '../../styles/colors.scss' as colors;
 
+
 .live-progress-container {
   width: 80%;
-  padding: 20px;
+  padding: var(--spacing-20);
 
   .live-progress-title {
-    color: colors.$white;
-    margin-bottom: 16px;
+    margin-bottom: var(--spacing-16);
+    color: var(--white);
   }
 
   .no-players {
-    color: colors.$white;
+    padding: var(--spacing-40) var(--spacing-20);
     text-align: center;
-    padding: 40px 20px;
+    color: var(--white);
     opacity: 0.7;
   }
 
   .live-progress-inside-container {
-    margin-bottom: 20px;
-  }
+    margin-bottom: var(--spacing-20);
 
-  .player-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
 
-  .player-name {
-    font-weight: 600;
-    color: colors.$white;
-    font-size: 16px;
-    margin: 0;
-  }
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-8);
 
-  .player-stats {
-    display: flex;
-    gap: 8px;
-  }
+      .player-name {
+        margin: 0;
+        font-size: var(--font-size-16);
+        font-weight: 600;
+        color: var(--white);
+      }
 
-  .stat-badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
+      .player-stats {
+        display: flex;
+        gap: var(--spacing-8);
 
-    &.wpm {
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      color: colors.$white;
+        .stat-badge {
+          padding: var(--spacing-4) var(--spacing-12);
+          border-radius: var(--radius-12);
+          font-size: var(--font-size-12);
+          font-weight: 600;
+
+          &.wpm {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: var(--white);
+          }
+
+          &.accuracy {
+            background: var(--white-alpha-20);
+            color: var(--white);
+            border: var(--spacing-2) solid var(--white-alpha-33);
+          }
+        }
+      }
     }
 
-    &.accuracy {
-      background: colors.$white-alpha-20;
-      color: colors.$white;
-      border: 1px solid colors.$white-alpha-33;
+    .live-tracking-container {
+      position: relative;
+      width: 100%;
+      height: var(--spacing-32);
+      border-radius: var(--radius-16);
+      overflow: visible;
+      background-color: var(--white-alpha-10);
+
+      .completed-progress {
+        height: 100%;
+        border-radius: var(--radius-16);
+        background: linear-gradient(90deg,
+            #4facfe,
+            var(--primary-gradient-start));
+        transition: width 0.4s ease;
+      }
+
+      .progress-indicator {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: var(--spacing-32);
+        height: var(--spacing-32);
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: var(--font-size-14);
+        font-weight: 700;
+        color: var(--primary-gradient-start);
+
+        background: var(--white);
+        border: var(--spacing-2) solid var(--primary-gradient-start);
+        box-shadow: 0 var(--spacing-4) var(--spacing-12) var(--black-alpha-30);
+
+        pointer-events: none;
+        transition: left 0.4s ease;
+      }
+
+      .progress-text {
+        position: absolute;
+        top: 50%;
+        right: var(--spacing-12);
+        transform: translateY(-50%);
+
+        font-size: var(--font-size-12);
+        font-weight: 600;
+        color: var(--white);
+      }
     }
-  }
-
-  .live-tracking-container {
-    position: relative;
-    width: 100%;
-    height: 32px;
-    background-color: colors.$white-alpha-10;
-    border-radius: 16px;
-    overflow: visible;
-  }
-
-  .completed-progress {
-    height: 100%;
-    background: linear-gradient(90deg, #4facfe, colors.$primary-gradient-start);
-    border-radius: 16px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-indicator {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: colors.$white;
-    color: colors.$primary-gradient-start;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    transition: left 0.4s ease;
-    box-shadow: 0 4px 12px colors.$black-alpha-30;
-    border: 3px solid colors.$primary-gradient-start;
-  }
-
-  .progress-text {
-    position: absolute;
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    font-size: 12px;
-    font-weight: 600;
-    color: colors.$white;
   }
 }

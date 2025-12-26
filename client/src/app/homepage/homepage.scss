@@ -2,7 +2,7 @@
 @use '../styles/typography' as *;
 
 .dashboard-container {
-  background: $primary-gradient;
+  background: var(--primary-gradient);
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -11,39 +11,39 @@
 
   .logout-btn {
     position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    background: $white-alpha-90;
-    border: 0.0625rem solid $white-alpha-33;
-    border-radius: 0.5rem;
-    padding: 0.625rem 1rem;
-    color: $primary-gradient-end;
+    top: var(--spacing-20);
+    right: var(--spacing-20);
+    background: var(--white-alpha-90);
+    border: var(--spacing-2) solid var(--white-alpha-33);
+    border-radius: var(--radius-8);
+    padding: var(--spacing-10) var(--spacing-16);
+    color: var(--primary-gradient-end);
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    transition: $transition-smooth;
-    backdrop-filter: blur(0.625rem);
+    gap: var(--spacing-8);
+    font-size: var(--font-size-14);
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(var(--shadow-blur-10));
     z-index: 1000;
 
     &:hover {
-      background: $white;
-      transform: translateY(-0.0625rem);
-      box-shadow: 0 0.25rem 0.75rem $black-alpha-10;
+      background: var(--white);
+      transform: translateY(-var(--spacing-2));
+      box-shadow: 0 var(--spacing-4) var(--spacing-12) var(--black-alpha-10);
     }
 
     svg {
-      width: 1.125rem;
-      height: 1.125rem;
+      width: var(--font-size-18);
+      height: var(--font-size-18);
     }
   }
 
   .welcome-dashboard-container {
-    background-color: $white;
-    padding: 1.25rem;
-    border-radius: 0.625rem;
+    background-color: var(--white);
+    padding: var(--spacing-20);
+    border-radius: var(--radius-10);
     width: 50%;
     display: flex;
     align-items: center;
@@ -54,20 +54,20 @@
 .welcome-dashboard-container {
   .welcome-note {
     text-align: center;
-    color: $primary-gradient-start;
-    padding-bottom: 0.625rem;
-    font-size: 3.75rem;
-    margin-top: 0.875rem;
+    color: var(--primary-gradient-start);
+    padding-bottom: var(--spacing-10);
+    font-size: var(--font-size-64);
+    margin-top: var(--spacing-14);
 
     .wel-text {
-      color: $primary-gradient-end;
+      color: var(--primary-gradient-end);
     }
   }
 
   .subtitle {
-    color: $text-mute;
-    margin-top: 0.5rem;
-    font-size: 0.9375rem;
+    color: var(--text-mute);
+    margin-top: var(--spacing-8);
+    font-size: var(--font-size-16);
   }
 }
 
@@ -76,96 +76,96 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-16);
 
   .profile {
     display: flex;
-    gap: 0.75rem;
+    gap: var(--spacing-12);
     align-items: center;
 
     .avatar {
-      width: 4rem;
-      height: 4rem;
-      border-radius: 0.75rem;
-      background: $primary-gradient;
-      color: $white;
+      width: var(--size-64);
+      height: var(--size-64);
+      border-radius: var(--radius-12);
+      background: var(--primary-gradient);
+      color: var(--white);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 1.375rem;
-      box-shadow: 0 0.375rem 1.125rem $primary-alpha-18;
+      font-size: var(--font-size-24);
+      box-shadow: 0 var(--spacing-6) var(--spacing-18) var(--primary-alpha-18);
     }
   }
 
   .user-info {
     .user-name {
       font-weight: 700;
-      color: $text-dark;
+      color: var(--text-dark);
     }
 
     .user-email {
-      font-size: 0.8125rem;
-      color: $text-light;
+      font-size: var(--font-size-14);
+      color: var(--text-light);
     }
   }
 
   .controls {
     display: flex;
-    gap: 0.625rem;
+    gap: var(--spacing-10);
 
     .create-button {
-      background: $white;
-      color: $primary-gradient-start;
-      border: 0.125rem solid $primary-alpha-15;
-      padding: 0.625rem 0.875rem;
-      border-radius: 0.5rem;
+      background: var(--white);
+      color: var(--primary-gradient-start);
+      border: var(--spacing-2) solid var(--primary-alpha-15);
+      padding: var(--spacing-10) var(--spacing-14);
+      border-radius: var(--radius-8);
       cursor: pointer;
       font-weight: 600;
-      transition: $transition-transform;
+      transition: var(--transition-transform);
 
       &:hover {
-        transform: translateY(-0.125rem);
+        transform: translateY(-var(--spacing-2));
       }
     }
 
     .join-button {
-      padding: 0.625rem;
-      border-radius: 0.625rem;
-      color: $white;
-      background-color: $primary-gradient-start;
+      padding: var(--spacing-10);
+      border-radius: var(--radius-10);
+      color: var(--white);
+      background-color: var(--primary-gradient-start);
       cursor: pointer;
-      transition: $transition-transform;
+      transition: var(--transition-transform);
 
       &:hover {
-        transform: translateY(-0.125rem);
+        transform: translateY(-var(--spacing-2));
       }
     }
   }
 }
 
 .stats-row {
-  margin-top: 1.125rem;
+  margin-top: var(--spacing-18);
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-16);
 
   .stat {
-    background: $white-alpha-90;
-    padding: 0.75rem 1.125rem;
-    border-radius: 0.625rem;
-    min-width: 6.875rem;
+    background: var(--white-alpha-90);
+    padding: var(--spacing-12) var(--spacing-18);
+    border-radius: var(--radius-10);
+    min-width: var(--size-128);
     text-align: center;
-    box-shadow: 0 0.25rem 0.875rem $black-alpha-04;
+    box-shadow: 0 var(--spacing-4) var(--spacing-14) var(--black-alpha-04);
 
     .stat-value {
-      font-size: 1.375rem;
+      font-size: var(--font-size-24);
       font-weight: 700;
-      color: $primary-gradient-start;
+      color: var(--primary-gradient-start);
     }
 
     .stat-label {
-      font-size: 0.75rem;
-      color: $text-light;
+      font-size: var(--font-size-12);
+      color: var(--text-light);
     }
   }
 }
@@ -173,67 +173,67 @@
 .modal-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-12);
 
   &.rooms-list {
     .rooms-intro {
-      font-size: 13px;
-      color: $text-light;
-      margin-bottom: 10px;
+      font-size: var(--font-size-14);
+      color: var(--text-light);
+      margin-bottom: var(--spacing-10);
     }
 
     .room-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      border: 1px solid $light-border;
-      border-radius: 6px;
-      background-color: $bg-light;
-      transition: $transition-smooth;
+      padding: var(--spacing-16);
+      border: var(--spacing-2) solid var(--light-border);
+      border-radius: var(--radius-6);
+      background-color: var(--bg-light);
+      transition: var(--transition-smooth);
 
       &:hover {
-        background-color: $bg-lighter;
-        border-color: $primary-gradient-start;
-        box-shadow: 0 2px 8px $primary-alpha-15;
+        background-color: var(--bg-lighter);
+        border-color: var(--primary-gradient-start);
+        box-shadow: 0 var(--spacing-2) var(--spacing-8) var(--primary-alpha-15);
       }
 
       .room-info {
         flex: 1;
 
         p {
-          margin: 5px 0;
-          font-size: 14px;
-          color: $text-gray;
+          margin: var(--spacing-4) 0;
+          font-size: var(--font-size-14);
+          color: var(--text-gray);
 
           &.room-id {
             font-weight: 500;
-            color: $primary-gradient-start;
+            color: var(--primary-gradient-start);
           }
 
           &.room-name {
-            color: $text-lighter;
+            color: var(--text-lighter);
           }
         }
       }
 
       .room-join-btn {
-        padding: 8px 16px;
-        background-color: $primary-gradient-start;
-        color: $white;
+        padding: var(--spacing-8) var(--spacing-16);
+        background-color: var(--primary-gradient-start);
+        color: var(--white);
         border: none;
-        border-radius: 4px;
+        border-radius: var(--radius-4);
         cursor: pointer;
-        font-size: 14px;
+        font-size: var(--font-size-14);
         font-weight: 500;
-        transition: $transition-smooth;
+        transition: var(--transition-smooth);
         white-space: nowrap;
-        margin-left: 10px;
+        margin-left: var(--spacing-10);
 
         &:hover {
-          background-color: $primary-gradient-end;
-          transform: translateY(-2px);
-          box-shadow: 0 2px 8px $primary-alpha-30;
+          background-color: var(--primary-gradient-end);
+          transform: translateY(-var(--spacing-2));
+          box-shadow: 0 var(--spacing-2) var(--spacing-8) var(--primary-alpha-30);
         }
 
         &:active {
@@ -246,34 +246,34 @@
   &.create-room {
     label {
       display: block;
-      margin-bottom: 6px;
-      color: $text-gray;
+      margin-bottom: var(--spacing-6);
+      color: var(--text-gray);
       font-weight: 600;
     }
 
     .modal-input {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid $primary-alpha-12;
-      box-shadow: inset 0 1px 0 $black-alpha-05;
+      padding: var(--spacing-12) var(--spacing-14);
+      border-radius: var(--radius-8);
+      border: var(--spacing-2) solid var(--primary-alpha-12);
+      box-shadow: inset 0 var(--spacing-2) 0 var(--black-alpha-05);
     }
 
     .hint {
-      margin-top: 8px;
-      font-size: 13px;
-      color: $text-light;
+      margin-top: var(--spacing-8);
+      font-size: var(--font-size-14);
+      color: var(--text-light);
     }
   }
 }
 
 .modal-input {
-  padding: 0.625rem;
+  padding: var(--spacing-10);
   width: 70%;
 }
 
 .button-container {
   display: flex;
-  gap: 1.25rem;
-  margin-top: 1.25rem;
+  gap: var(--spacing-20);
+  margin-top: var(--spacing-20);
 }

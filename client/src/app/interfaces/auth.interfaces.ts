@@ -22,3 +22,12 @@ export interface IRegisterRequest {
   email: string;
   password: string;
 }
+
+export interface ILogoutResponse {
+  message: string;
+}
+
+export interface IUsersListResponse {
+  users: IUser[];
+  total: number;
+}

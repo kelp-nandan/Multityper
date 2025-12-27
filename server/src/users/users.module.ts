@@ -1,20 +1,20 @@
 import { Module } from "@nestjs/common";
-import { JwtModule, JwtModuleOptions } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UsersService } from "./users.service";
-import { UsersController } from "./users.controller";
+import { JwtModule } from "@nestjs/jwt";
 import { DatabaseModule } from "src/database/database.module";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
 
 @Module({
   imports: [
     DatabaseModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService): JwtModuleOptions => {
+      useFactory: (configService: ConfigService) => {
         return {
           secret: configService.get<string>("jwt.secret"),
           signOptions: {
-            expiresIn: configService.get<string>("jwt.expiresIn") as any,
+            expiresIn: "15m",
           },
         };
       },

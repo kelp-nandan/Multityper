@@ -1,0 +1,216 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8B4FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#C8A4F4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8A0E8;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="cloudGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#D4BAFF;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#C8A4F4;stop-opacity:0.2" />
+    </radialGradient>
+    
+    <linearGradient id="rocketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9B7FD9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7B5FB9;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFEB99;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD966;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA64D;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <linearGradient id="keyboardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8A0E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9B7FD9;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="labelGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#F0E6FF;stop-opacity:0.95" />
+    </linearGradient>
+    
+    <linearGradient id="progressBar1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFB366;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="progressBar2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFA64D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#EC4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="progressBar3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  
+  <!-- Decorative clouds -->
+  <ellipse cx="200" cy="800" rx="380" ry="180" fill="url(#cloudGradient)" opacity="0.4"/>
+  <ellipse cx="1650" cy="900" rx="420" ry="200" fill="url(#cloudGradient)" opacity="0.35"/>
+  <ellipse cx="950" cy="150" rx="350" ry="160" fill="url(#cloudGradient)" opacity="0.3"/>
+  <ellipse cx="400" cy="250" rx="280" ry="140" fill="url(#cloudGradient)" opacity="0.25"/>
+  <ellipse cx="1500" cy="200" rx="320" ry="150" fill="url(#cloudGradient)" opacity="0.3"/>
+  
+  <!-- Stars -->
+  <circle cx="220" cy="150" r="3" fill="#FFFFFF" opacity="0.8" filter="url(#glow)"/>
+  <circle cx="180" cy="220" r="2" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="340" cy="180" r="2.5" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="520" cy="120" r="2" fill="#FFFFFF" opacity="0.65"/>
+  <circle cx="720" cy="90" r="3" fill="#FFFFFF" opacity="0.75"/>
+  <circle cx="880" cy="140" r="2" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="1050" cy="110" r="2.5" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="1220" cy="160" r="2" fill="#FFFFFF" opacity="0.65"/>
+  <circle cx="1380" cy="95" r="3" fill="#FFFFFF" opacity="0.8" filter="url(#glow)"/>
+  <circle cx="1520" cy="145" r="2" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="1680" cy="110" r="2.5" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="1780" cy="180" r="2" fill="#FFFFFF" opacity="0.65"/>
+  
+  <!-- Sparkles -->
+  <g opacity="0.9" filter="url(#glow)">
+    <path d="M 270 200 L 275 208 L 283 213 L 275 218 L 270 226 L 265 218 L 257 213 L 265 208 Z" fill="#FFF5CC"/>
+    <path d="M 650 330 L 654 336 L 660 340 L 654 344 L 650 350 L 646 344 L 640 340 L 646 336 Z" fill="#FFF5CC"/>
+    <path d="M 850 450 L 855 458 L 863 463 L 855 468 L 850 476 L 845 468 L 837 463 L 845 458 Z" fill="#FFF5CC"/>
+    <path d="M 1420 380 L 424 386 L 430 390 L 424 394 L 420 400 L 416 394 L 410 390 L 416 386 Z" fill="#FFF5CC"/>
+    <path d="M 250 580 L 255 588 L 263 593 L 255 598 L 250 606 L 245 598 L 237 593 L 245 588 Z" fill="#FFE699"/>
+  </g>
+  
+  <!-- Keyboard -->
+  <g transform="translate(180, 700)">
+    <!-- Keyboard base -->
+    <rect x="0" y="0" width="480" height="140" rx="20" fill="url(#keyboardGradient)" opacity="0.9"/>
+    <rect x="10" y="10" width="460" height="120" rx="15" fill="#9B7FD9" opacity="0.3"/>
+    
+    <!-- Keys -->
+    <g fill="#FFFFFF" opacity="0.85">
+      <!-- Row 1 -->
+      <rect x="30" y="25" width="40" height="35" rx="5"/>
+      <rect x="80" y="25" width="40" height="35" rx="5"/>
+      <rect x="130" y="25" width="40" height="35" rx="5"/>
+      <rect x="180" y="25" width="40" height="35" rx="5"/>
+      <rect x="230" y="25" width="40" height="35" rx="5"/>
+      <rect x="280" y="25" width="40" height="35" rx="5"/>
+      <rect x="330" y="25" width="40" height="35" rx="5"/>
+      <rect x="380" y="25" width="40" height="35" rx="5"/>
+      
+      <!-- Row 2 -->
+      <rect x="30" y="70" width="40" height="35" rx="5"/>
+      <rect x="80" y="70" width="40" height="35" rx="5"/>
+      <rect x="130" y="70" width="40" height="35" rx="5"/>
+      <rect x="180" y="70" width="40" height="35" rx="5"/>
+      <rect x="230" y="70" width="40" height="35" rx="5"/>
+      <rect x="280" y="70" width="40" height="35" rx="5"/>
+      <rect x="330" y="70" width="40" height="35" rx="5"/>
+    </g>
+  </g>
+  
+  <!-- Rocket -->
+  <g transform="translate(420, 480)">
+    <!-- Rocket flame -->
+    <ellipse cx="50" cy="150" rx="25" ry="35" fill="url(#flameGradient)" opacity="0.9" filter="url(#softGlow)">
+      <animate attributeName="ry" values="35;45;35" dur="0.5s" repeatCount="indefinite"/>
+    </ellipse>
+    
+    <!-- Rocket body -->
+    <ellipse cx="50" cy="50" rx="45" ry="70" fill="url(#rocketGradient)" opacity="0.95"/>
+    <ellipse cx="50" cy="50" rx="35" ry="55" fill="#8B6FC9" opacity="0.5"/>
+    
+    <!-- Rocket window -->
+    <circle cx="50" cy="40" r="18" fill="#5B3FA9" opacity="0.8"/>
+    <circle cx="50" cy="40" r="15" fill="#3D2780" opacity="0.9"/>
+    
+    <!-- Rocket fins -->
+    <path d="M 20 80 L 10 120 L 35 100 Z" fill="#7B5FB9" opacity="0.9"/>
+    <path d="M 80 80 L 90 120 L 65 100 Z" fill="#7B5FB9" opacity="0.9"/>
+    
+    <!-- Rocket tip -->
+    <path d="M 50 0 L 20 30 L 80 30 Z" fill="#9B7FD9" opacity="0.95"/>
+  </g>
+  
+  <!-- Timer Badge -->
+  <g transform="translate(420, 230)">
+    <rect x="0" y="0" width="120" height="70" rx="15" fill="#8B6FC9" opacity="0.95"/>
+    <text x="60" y="48" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF" text-anchor="middle">25 s</text>
+  </g>
+  
+  <!-- Leaderboard entries -->
+  <!-- 1st place - lucia -->
+  <g transform="translate(420, 340)">
+    <rect x="0" y="0" width="200" height="60" rx="12" fill="url(#labelGradient)" filter="url(#glow)"/>
+    <text x="100" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#8B6FC9" text-anchor="middle">lucia</text>
+  </g>
+  <g transform="translate(350, 380)">
+    <rect x="0" y="0" width="180" height="22" rx="11" fill="#9B7FD9" opacity="0.3"/>
+    <rect x="0" y="0" width="120" height="22" rx="11" fill="url(#progressBar1)"/>
+  </g>
+  
+  <!-- 2nd place - ghansen -->
+  <g transform="translate(610, 380)">
+    <rect x="0" y="0" width="240" height="60" rx="12" fill="url(#labelGradient)"/>
+    <text x="120" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#8B6FC9" text-anchor="middle">ghansen</text>
+    <text x="200" y="40" font-family="Arial, sans-serif" font-size="20" fill="#A78BFA">🏆</text>
+  </g>
+  <g transform="translate(560, 420)">
+    <rect x="0" y="0" width="200" height="22" rx="11" fill="#9B7FD9" opacity="0.3"/>
+    <rect x="0" y="0" width="155" height="22" rx="11" fill="url(#progressBar2)"/>
+  </g>
+  
+  <!-- 3rd place - hannah -->
+  <g transform="translate(780, 460)">
+    <rect x="0" y="0" width="250" height="60" rx="12" fill="url(#labelGradient)"/>
+    <text x="125" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#8B6FC9" text-anchor="middle">hannah</text>
+  </g>
+  <g transform="translate(780, 500)">
+    <rect x="0" y="0" width="180" height="22" rx="11" fill="#9B7FD9" opacity="0.3"/>
+    <rect x="0" y="0" width="105" height="22" rx="11" fill="url(#progressBar3)"/>
+  </g>
+  
+  <!-- 4th place - kyle -->
+  <g transform="translate(1000, 540)">
+    <rect x="0" y="0" width="220" height="60" rx="12" fill="url(#labelGradient)"/>
+    <text x="110" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#8B6FC9" text-anchor="middle">kyle</text>
+  </g>
+  <g transform="translate(1000, 580)">
+    <rect x="0" y="0" width="170" height="22" rx="11" fill="#9B7FD9" opacity="0.3"/>
+    <rect x="0" y="0" width="90" height="22" rx="11" fill="url(#progressBar1)"/>
+  </g>
+  
+  <!-- Additional sparkle effects -->
+  <g opacity="0.7">
+    <circle cx="300" cy="450" r="4" fill="#FFEB99" filter="url(#glow)">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="550" cy="280" r="3" fill="#FFE699" filter="url(#glow)">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="840" cy="560" r="3.5" fill="#FFF5CC" filter="url(#glow)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

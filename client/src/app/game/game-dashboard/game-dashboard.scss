@@ -1,0 +1,190 @@
+// Game Dashboard Styles
+
+//root
+.game-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
+  position: relative;
+  overflow: hidden;
+
+  &.blurred {
+    .game-content {
+      filter: blur(var(--shadow-blur-8));
+      pointer-events: none;
+    }
+  }
+
+  //countdown
+  .countdown-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-index-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--black-alpha-70);
+    backdrop-filter: blur(var(--shadow-blur-10));
+
+    .countdown-timer {
+      text-align: center;
+      color: white;
+
+      .timer-display {
+        font-size: var(--font-size-128);
+        font-weight: var(--font-weight-700);
+        margin: 0;
+        text-shadow: 0 0 var(--spacing-32) var(--white-alpha-50);
+        animation: pulse 1s ease-in-out infinite alternate;
+      }
+
+      .timer-text {
+        margin-top: var(--spacing-12);
+        font-size: var(--font-size-24);
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: var(--spacing-2);
+      }
+    }
+  }
+
+  //game content
+  .game-content {
+    padding: var(--spacing-32);
+    opacity: 0;
+    transform: translateY(var(--spacing-20));
+    transition: all 0.4s ease;
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    //completion
+    .completion-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-index-overlay);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--black-alpha-80);
+      backdrop-filter: blur(var(--shadow-blur-10));
+
+      .stats-card {
+        text-align: center;
+        color: white;
+
+        h2 {
+          margin-bottom: var(--spacing-24);
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: var(--spacing-32);
+
+          .stat-item {
+            .label {
+              font-size: var(--font-size-16);
+              opacity: 0.7;
+              text-transform: uppercase;
+            }
+
+            .value {
+              font-size: var(--font-size-40);
+              font-weight: var(--font-weight-700);
+            }
+          }
+        }
+
+        .wait-text {
+          margin-top: var(--spacing-32);
+          opacity: 0.8;
+        }
+      }
+    }
+
+    //typing area
+    .typing-container {
+      max-width: var(--size-960);
+      margin: 0 auto;
+      padding: var(--spacing-40);
+      background: var(--white-alpha-10);
+      border-radius: var(--radius-20);
+      backdrop-filter: blur(var(--shadow-blur-8));
+
+      .stanza-box {
+        padding: var(--spacing-32);
+        background: var(--black-alpha-30);
+        border-radius: var(--radius-12);
+
+        .character-wrapper {
+          font-size: var(--font-size-28);
+          line-height: var(--line-height-44);
+          color: var(--white-alpha-95);
+          text-shadow: 0 0 var(--shadow-blur-4) var(--white-alpha-40);
+
+          .word {
+            display: inline-block;
+            margin-right: var(--spacing-6);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-4);
+            transition: all 0.2s ease;
+
+            &.pending {
+              opacity: 0.35;
+            }
+
+            &.completed {
+              opacity: 0.8;
+            }
+
+            &.active {
+              opacity: 1;
+              background: var(--gold-alpha-20);
+              box-shadow: 0 0 var(--shadow-blur-10) var(--gold-alpha-40);
+            }
+
+            .char {
+              &.correct {
+                color: var(--correct-text);
+              }
+
+              &.incorrect {
+                color: var(--incorrect-text);
+                text-decoration: underline wavy var(--incorrect-text);
+              }
+
+              &.pending {
+                color: var(--white-alpha-60);
+              }
+            }
+          }
+
+          .space {
+            white-space: pre;
+          }
+        }
+      }
+
+      .input-area {
+        .hidden-input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+//animations
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}

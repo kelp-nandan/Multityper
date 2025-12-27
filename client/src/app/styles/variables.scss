@@ -1,0 +1,89 @@
+@use 'sass:math';
+
+$base-font-size: 16px;
+
+@function rem($px) {
+  @return math.div($px, $base-font-size) * 1rem;
+}
+
+:root {
+  // Spacing (margin & padding)
+  --spacing-2: #{rem(2px)};
+  --spacing-4: #{rem(4px)};
+  --spacing-6: #{rem(6px)};
+  --spacing-8: #{rem(8px)};
+  --spacing-10: #{rem(10px)};
+  --spacing-12: #{rem(12px)};
+  --spacing-14: #{rem(14px)};
+  --spacing-15: #{rem(15px)};
+  --spacing-16: #{rem(16px)};
+  --spacing-18: #{rem(18px)};
+  --spacing-20: #{rem(20px)};
+  --spacing-24: #{rem(24px)};
+  --spacing-28: #{rem(28px)};
+  --spacing-30: #{rem(30px)};
+  --spacing-32: #{rem(32px)};
+  --spacing-40: #{rem(40px)};
+  --spacing-44: #{rem(44px)};
+  --spacing-48: #{rem(48px)};
+  --spacing-50: #{rem(50px)};
+  --spacing-56: #{rem(56px)};
+  --spacing-64: #{rem(64px)};
+  --spacing-80: #{rem(80px)};
+
+  // Border Radius
+  --radius-2: #{rem(2px)};
+  --radius-4: #{rem(4px)};
+  --radius-6: #{rem(6px)};
+  --radius-8: #{rem(8px)};
+  --radius-10: #{rem(10px)};
+  --radius-12: #{rem(12px)};
+  --radius-14: #{rem(14px)};
+  --radius-16: #{rem(16px)};
+  --radius-20: #{rem(20px)};
+  --radius-24: #{rem(24px)};
+  --radius-32: #{rem(32px)};
+
+  // Sizes (Widths/Heights)
+  --size-8: #{rem(8px)};
+  --size-16: #{rem(16px)};
+  --size-20: #{rem(20px)};
+  --size-24: #{rem(24px)};
+  --size-32: #{rem(32px)};
+  --size-40: #{rem(40px)};
+  --size-48: #{rem(48px)};
+  --size-56: #{rem(56px)};
+  --size-64: #{rem(64px)};
+  --size-80: #{rem(80px)};
+  --size-96: #{rem(96px)};
+  --size-128: #{rem(128px)};
+  --size-160: #{rem(160px)};
+  --size-192: #{rem(192px)};
+  --size-256: #{rem(256px)};
+  --size-320: #{rem(320px)};
+  --size-420: #{rem(420px)};
+  --size-480: #{rem(480px)};
+  --size-640: #{rem(640px)};
+  --size-960: #{rem(960px)};
+
+  // Shadows
+  --shadow-blur-4: #{rem(4px)};
+  --shadow-blur-8: #{rem(8px)};
+  --shadow-blur-10: #{rem(10px)};
+  --shadow-blur-16: #{rem(16px)};
+  --shadow-blur-20: #{rem(20px)};
+  --shadow-blur-32: #{rem(32px)};
+
+  // Z-index (Stacking Priority)
+  --z-index-base: 1;
+  --z-index-dropdown: 2;
+  --z-index-sticky: 3;
+  --z-index-fixed: 4;
+  --z-index-overlay: 5;
+  --z-index-modal: 6;
+  --z-index-tooltip: 7;
+
+  // Transitions
+  --transition-smooth: all 0.2s ease;
+  --transition-transform: transform 0.2s ease;
+}

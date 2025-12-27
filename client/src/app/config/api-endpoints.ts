@@ -1,9 +1,6 @@
 import { environment } from '../../environments/environment';
 
 export const API_ENDPOINTS = {
-  // Base API URL
-  BASE_URL: environment.apiUrl,
-
   // Authentication endpoints
   AUTH: {
     LOGIN: `${environment.apiUrl}/auth/login`,
@@ -21,7 +18,4 @@ export const API_ENDPOINTS = {
     PROFILE: `${environment.apiUrl}/users/profile`,
     LIST: `${environment.apiUrl}/users`,
   },
-
-  // Paragraph endpoints
-  PARAGRAPHS: `${environment.apiUrl}/paragraphs`,
 } as const;

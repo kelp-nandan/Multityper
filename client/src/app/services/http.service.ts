@@ -1,19 +1,23 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import { API_ENDPOINTS } from '../config/api-endpoints';
 import {
-  IUser,
   IAuthResponse,
   ILoginRequest,
+  ILogoutResponse,
   IRegisterRequest,
+  IUsersListResponse,
 } from '../interfaces/auth.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+
+  constructor() {}
 
   login(loginData: ILoginRequest): Observable<IAuthResponse> {
     return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.LOGIN, loginData);
@@ -27,15 +31,15 @@ export class HttpService {
     return this.http.get<IAuthResponse>(API_ENDPOINTS.USERS.PROFILE);
   }
 
-  logout(): Observable<any> {
-    return this.http.post(API_ENDPOINTS.AUTH.LOGOUT, {});
+  logout(): Observable<ILogoutResponse> {
+    return this.http.post<ILogoutResponse>(API_ENDPOINTS.AUTH.LOGOUT, {});
   }
 
   refreshToken(): Observable<IAuthResponse> {
     return this.http.post<IAuthResponse>(API_ENDPOINTS.TOKEN.REFRESH, {});
   }
 
-  getUsers(): Observable<any> {
-    return this.http.get(API_ENDPOINTS.USERS.LIST);
+  getUsers(): Observable<IUsersListResponse> {
+    return this.http.get<IUsersListResponse>(API_ENDPOINTS.USERS.LIST);
   }
 }

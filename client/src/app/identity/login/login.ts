@@ -15,6 +15,7 @@ export class Login {
   isLoading = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
+  passwordStrength = signal(0);
 
   loginForm: FormGroup;
   registerForm: FormGroup;
@@ -108,5 +109,18 @@ export class Login {
 
   private getErrorMessage(error: { status?: number; error?: { message?: string } }): string {
     return error.error?.message || 'Please try again';
+  }
+
+  updatePasswordStrength(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const password = input.value;
+    let strength = 0;
+
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+
+    this.passwordStrength.set(Math.min(strength, 4));
   }
 }

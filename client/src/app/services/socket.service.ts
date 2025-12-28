@@ -79,7 +79,7 @@ export class SocketService {
     this.socket.on('game-started', (item: IRoom) => {
       this.ngZone.run(() => {
         this.roomService.updateRoom(item);
-        this.router.navigate(['/game-dashboard']);
+        this.router.navigate([`/game-dashboard/${item.key}`]);
       });
     });
 

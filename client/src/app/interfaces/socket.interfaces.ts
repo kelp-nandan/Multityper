@@ -67,3 +67,9 @@ export interface ILeaderboardDisplay {
   time: number;
   totalWrong: number;
 }
+
+export interface IFetchStats {
+  gamesPlayed: number;
+  wins: number;
+  bestWpm: number; 
+}

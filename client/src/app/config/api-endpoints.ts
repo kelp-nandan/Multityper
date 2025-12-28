@@ -18,4 +18,8 @@ export const API_ENDPOINTS = {
     PROFILE: `${environment.apiUrl}/users/profile`,
     LIST: `${environment.apiUrl}/users`,
   },
+  // Leaderboard endpoints
+  LEADERBOARD: {
+    STATS: `${environment.apiUrl}/leaderboard/getStats`,
+  },
 } as const;

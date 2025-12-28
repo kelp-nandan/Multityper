@@ -40,7 +40,10 @@ export class GameLobby implements OnInit, OnDestroy {
       this.router.navigate(['/homepage']);
       return;
     }
-    this.socketService.handleRestoreRoom(roomId);
+    const currentRoom = this.roomService.getCurrentRoom();
+    if (!currentRoom || currentRoom.key !== roomId) {
+      this.socketService.handleRestoreRoom(roomId);
+    }
     this.room$ = this.roomService.selectedRoom$;
 
     const roomSub = this.roomService.selectedRoom$.subscribe((room: IRoom | null) => {
@@ -50,7 +53,9 @@ export class GameLobby implements OnInit, OnDestroy {
         const createdBy = room.data.players?.find(
           (p: { isCreated: boolean; userId: number }) => p.isCreated,
         );
-        this.isCreator.set(createdBy?.userId === currentUser?.id);
+        console.log("currentUser", currentUser);
+        console.log("createdBy", createdBy);
+        this.isCreator.set(createdBy?.userId === currentUser?.userId);
       }
     });
     this.subscriptions.push(roomSub);
@@ -77,7 +82,7 @@ export class GameLobby implements OnInit, OnDestroy {
   leaveBtnValidation(player: { userId: number; userName: string; isCreated: boolean }): boolean {
     return (
       !player.isCreated &&
-      player.userId === this.currentUser?.id &&
+      player.userId === this.currentUser?.userId &&
       !this.roomDetails()?.data.gameStarted
     );
   }

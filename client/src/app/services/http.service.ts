@@ -10,6 +10,7 @@ import {
   IRegisterRequest,
   IUsersListResponse,
 } from '../interfaces/auth.interfaces';
+import { IFetchStats } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -41,5 +42,9 @@ export class HttpService {
 
   getUsers(): Observable<IUsersListResponse> {
     return this.http.get<IUsersListResponse>(API_ENDPOINTS.USERS.LIST);
+  }
+
+  getUserStats(): Observable<{data: IFetchStats}>{
+    return this.http.get<{data: IFetchStats}>(API_ENDPOINTS.LEADERBOARD.STATS);
   }
 }

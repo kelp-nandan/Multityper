@@ -83,7 +83,7 @@ export class GameDashboard implements OnInit, OnDestroy {
     this.currentRoomId = currentRoom?.key || '';
 
     const currentUser = this.authService.currentUser();
-    this.currentUserId = currentUser?.id?.toString() || '';
+    this.currentUserId = currentUser?.userId?.toString() || '';
   }
 
   ngOnInit(): void {

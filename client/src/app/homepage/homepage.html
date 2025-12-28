@@ -51,17 +51,17 @@
       <div class="stat-item">
         <span class="stat-icon">⚡</span>
         <span class="stat-label">Best WPM:</span>
-        <span class="stat-value">42</span>
+        <span class="stat-value">{{userStats().bestWpm}}</span>
       </div>
       <div class="stat-item">
         <span class="stat-icon">🎯</span>
-        <span class="stat-label">Accuracy:</span>
-        <span class="stat-value">94%</span>
+        <span class="stat-label">gamesPlayed:</span>
+        <span class="stat-value">{{userStats().gamesPlayed}}</span>
       </div>
       <div class="stat-item">
         <span class="stat-icon">🏆</span>
         <span class="stat-label">Wins:</span>
-        <span class="stat-value">6</span>
+        <span class="stat-value">{{userStats().wins}}</span>
       </div>
       <p class="stats-hint">Play your first race to unlock stats!</p>
     </div>
@@ -69,15 +69,15 @@
     <div class="quick-stats">
       <div class="quick-stat">
         <span class="icon">⚡</span>
-        <span class="value">42</span>
+        <span class="value">{{userStats().bestWpm}}</span>
       </div>
       <div class="quick-stat">
         <span class="icon">🎯</span>
-        <span class="value">94%</span>
+        <span class="value">{{userStats().gamesPlayed}}</span>
       </div>
       <div class="quick-stat">
         <span class="icon">🏆</span>
-        <span class="value">6</span>
+        <span class="value">{{userStats().wins}}</span>
       </div>
     </div>
   </div>

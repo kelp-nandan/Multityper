@@ -1,7 +1,10 @@
 export interface IUser {
-  id: number;
+  userId: number;
   name: string;
   email: string;
+  gamesPlayed: number;
+  wins: number;
+  bestWpm: number;
 }
 
 export interface IAuthResponse {

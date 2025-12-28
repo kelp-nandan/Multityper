@@ -9,6 +9,7 @@ import { IRoom } from '../interfaces/room.interface';
 import { Modal } from '../modal/modal';
 import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
+import { HttpService } from '../services/http.service';
 
 @Component({
   selector: 'app-homepage',
@@ -18,17 +19,20 @@ import { SocketService } from '../services/socket.service';
 })
 export class HomePage implements OnInit {
   rooms$!: Observable<IRoom[]>;
+
   user = signal<IUser | null>(null);
   showDetails = signal(false);
   isLoading = signal(false);
   showJoinModal = signal(false);
   showCreateModal = signal(false);
   roomName = signal<string>('');
+  userStats = signal<{ bestWpm: number; gamesPlayed: number; wins: number }>({ bestWpm: 0, gamesPlayed: 0, wins: 0 });
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly socketService = inject(SocketService);
   private readonly roomService = inject(RoomService);
+  private readonly httpService = inject(HttpService);
 
   constructor() {
     this.rooms$ = this.roomService.rooms$;
@@ -39,14 +43,37 @@ export class HomePage implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
     const currentUser = this.authService.currentUser();
     if (currentUser) {
       const cleanUser = currentUser;
       this.user.set(cleanUser);
+      this.fetchUserStats();
     } else {
       this.fetchUserProfile();
     }
+  }
+
+  fetchUserStats() {
+    this.isLoading.set(true);
+    this.httpService.getUserStats().subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.data) {
+          const currentStats = this.user();
+          if (currentStats) {
+            this.userStats.set({
+              bestWpm: response.data.bestWpm,
+              gamesPlayed: response.data.gamesPlayed,
+              wins: response.data.wins
+            });
+          }
+        }
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Error fetching user stats:', error);
+      },
+    });
   }
 
   trackByRoomId(index: number, room: IRoom): string {

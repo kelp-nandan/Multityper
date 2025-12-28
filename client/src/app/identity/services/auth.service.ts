@@ -70,7 +70,7 @@ export class AuthService {
     return this.httpService.login({ email, password: hashedPassword });
   }
 
-  register(userData: IRegisterRequest): Observable<IAuthResponse> {
+  register(userData: any): Observable<IAuthResponse> {
     // Hash password client-side
     const hashedPassword = this.encryptPassword(userData.password);
     return this.httpService.register({

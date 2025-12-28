@@ -19,6 +19,7 @@ import { IPlayerStatsResponse } from "../interfaces";
 import { IPlayer } from "../interfaces/rooms.interface";
 import { ParagraphService } from "../paragraph/paragraph.service";
 import { RedisService } from "../redis/redis.service";
+import { UserRepository } from "src/database/repositories";
 
 interface IAuthenticatedSocket extends Socket {
   data: {
@@ -38,6 +39,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private redisService: RedisService,
     private paragraphService: ParagraphService,
+    private userRepository: UserRepository,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -125,18 +127,40 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: IAuthenticatedSocket,
   ): Promise<void> {
     const roomData = await this.redisService.getRoom(data.roomId);
+
     if (!roomData) {
-      client.emit("join-room-error", {
-        message: "Room does not exist",
-      });
+      client.emit("join-room-error", { message: "Room does not exist" });
       return;
     }
+
     if (!roomData.players.some((p: IPlayer) => p.userId === client.data.user.id)) {
       client.emit("join-room-error", { message: "Not authorized" });
       return;
     }
+
     await client.join(data.roomId);
     client.emit("joined-room", { key: data.roomId, data: roomData });
+  }
+
+
+  @SubscribeMessage('get-game-state')
+  async handleGameState(@MessageBody() roomId: string, @ConnectedSocket() client: Socket) {
+    const roomData = await this.redisService.getRoom(roomId);
+    if(!roomData){
+      client.emit("join-room-error", {
+        message: "Room does not exist"
+      });
+      return;
+    }
+    const userId = client.data.user.id;
+    if(!roomData.players.some((p: IPlayer) => p.userId === userId)) {
+      client.emit("join-room-error", {
+        message: "You does not belong to this room"
+      });
+      return;
+    }
+    await client.join(roomId);
+    client.emit("restored-room", { key: roomId, data: roomData });
   }
 
   @SubscribeMessage("join-room")
@@ -229,6 +253,11 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       throw new WsException("Only room creator can start the game");
     }
 
+    if(roomData.players.length < 2 || roomData.players.length > 5) {
+      client.emit('join-room-error', { message: 'To start the game players should be minimum of 2 and maximum of 5' });
+      return;
+    }
+
     // Lock the room so no new players can join
     roomData.gameStarted = true;
     await this.redisService.setRoom({
@@ -303,6 +332,21 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       const allFinished = roomData.players.every((p: IPlayer) => p.stats?.finished === true);
 
       if (allFinished) {
+        const sortedPlayers = [...roomData.players].sort((a, b) => {
+          if ((b.stats?.wpm ?? 0) !== (a.stats?.wpm ?? 0)) {
+            return (b.stats?.wpm ?? 0) - (a.stats?.wpm ?? 0);
+          }
+          return (b.stats?.accuracy ?? 0) - (a.stats?.accuracy ?? 0);
+        });
+
+        const winnerUserId = sortedPlayers[0].userId;
+        for (const player of roomData.players) {
+          await this.userRepository.updateUserStats(player.userId, {
+            wins: player.userId === winnerUserId ? 1 : 0,
+            gamesPlayed: 1,
+            bestWpm: player.stats?.wpm ?? 0,
+          });
+        }
         // All players finished - emit event and set up redirect
         this.server.to(data.roomId).emit("all-players-finished", {
           message: "All players have completed! Redirecting to leaderboard in 5 seconds...",
@@ -373,7 +417,8 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
         data: roomData,
       });
     } catch (error) {
-      this.logger.error("Error updating live progress", error);
+      // Error handling can be added here if needed
+      console.log(error);
     }
   }
 }

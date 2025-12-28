@@ -30,7 +30,7 @@ export const routes: Routes = [
     data: { requiresAuth: true },
   },
   {
-    path: 'game-dashboard',
+    path: 'game-dashboard/:_id',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./game/game-dashboard/game-dashboard').then((c) => c.GameDashboard),

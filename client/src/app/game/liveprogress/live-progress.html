@@ -1,27 +1,29 @@
 <div class="live-progress-container">
-  <h1 class="live-progress-title">Let's See Who's Ahead</h1>
+  <h2 class="live-progress-title">Live Race Progress</h2>
 
   @if (playersProgress().length === 0) {
-    <p class="no-players">Waiting for players...</p>
+  <p class="no-players">Waiting for players...</p>
   } @else {
-    @for (player of playersProgress(); track player.userId) {
-      <div class="live-progress-inside-container">
-        <div class="player-header">
-          <p class="player-name">{{ player.userName }}</p>
-          <div class="player-stats">
-            <span class="stat-badge wpm">{{ player.stats?.wpm || 0 }} WPM</span>
-            <span class="stat-badge accuracy">{{ player.stats?.accuracy || 0 }}% ACC</span>
-          </div>
-        </div>
-
-        <div class="live-tracking-container">
-          <div class="completed-progress" [style.width.%]="player.stats?.progress ?? 0"></div>
-          <div class="progress-indicator" [style.left.%]="player.stats?.progress ?? 0">
-            {{ player.userName.charAt(0).toUpperCase() }}
-          </div>
-          <span class="progress-text">{{ player.stats?.progress ?? 0 }}%</span>
-        </div>
+  @for (player of playersProgress(); track player.userId) {
+  <div class="live-progress-inside-container">
+    <div class="player-header">
+      <div class="player-info">
+        <span class="player-avatar">{{ player.userName.charAt(0).toUpperCase() }}</span>
+        <p class="player-name">{{ player.userName }}</p>
       </div>
-    }
+      <div class="player-stats">
+        <span class="stat-badge wpm">{{ player.stats?.wpm || 0 }} WPM</span>
+        <span class="stat-badge accuracy">{{ player.stats?.accuracy || 0 }}% ACC</span>
+      </div>
+    </div>
+
+    <div class="live-tracking-container">
+      <div class="completed-progress" [style.width.%]="player.stats?.progress ?? 0"></div>
+      <div class="progress-indicator" [style.left.%]="player.stats?.progress ?? 0">
+        {{ player.userName.charAt(0).toUpperCase() }}
+      </div>
+    </div>
+  </div>
+  }
   }
 </div>

@@ -1,12 +1,49 @@
 // Live Progress Styles
+@use '../../styles/variables.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/typography.scss';
 
 .live-progress-container {
-  width: 80%;
-  padding: var(--spacing-20);
+  position: relative;
+  z-index: 9;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-40);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-32);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    max-width: 95%;
+    padding: var(--spacing-32);
+    border-radius: var(--radius-24);
+  }
+
+  @media (max-width: 480px) {
+    padding: var(--spacing-24);
+    border-radius: var(--radius-20);
+  }
 
   .live-progress-title {
-    margin-bottom: var(--spacing-16);
+    margin-bottom: var(--spacing-32);
     color: var(--white);
+    font-size: var(--font-size-32);
+    font-weight: var(--font-weight-700);
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      font-size: var(--font-size-28);
+      margin-bottom: var(--spacing-24);
+    }
+
+    @media (max-width: 480px) {
+      font-size: var(--font-size-24);
+      margin-bottom: var(--spacing-20);
+    }
   }
 
   .no-players {
@@ -17,40 +54,87 @@
   }
 
   .live-progress-inside-container {
-    margin-bottom: var(--spacing-20);
+    margin-bottom: var(--spacing-24);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
 
     .player-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--spacing-8);
+      margin-bottom: var(--spacing-16);
 
-      .player-name {
-        margin: 0;
-        font-size: var(--font-size-16);
-        font-weight: var(--font-weight-600);
-        color: var(--white);
+      @media (max-width: 640px) {
+        flex-wrap: wrap;
+        gap: var(--spacing-12);
+      }
+
+      .player-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-16);
+
+        .player-avatar {
+          width: var(--spacing-48);
+          height: var(--spacing-48);
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.25);
+          border: 3px solid rgba(255, 255, 255, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: var(--font-weight-700);
+          font-size: var(--font-size-20);
+          color: var(--white);
+          flex-shrink: 0;
+
+          @media (max-width: 480px) {
+            width: var(--spacing-40);
+            height: var(--spacing-40);
+            font-size: var(--font-size-16);
+          }
+        }
+
+        .player-name {
+          margin: 0;
+          font-size: var(--font-size-24);
+          font-weight: var(--font-weight-600);
+          color: var(--white);
+
+          @media (max-width: 480px) {
+            font-size: var(--font-size-18);
+          }
+        }
       }
 
       .player-stats {
         display: flex;
-        gap: var(--spacing-8);
+        gap: var(--spacing-12);
 
         .stat-badge {
-          padding: var(--spacing-4) var(--spacing-12);
-          border-radius: var(--radius-12);
-          font-size: var(--font-size-12);
+          padding: var(--spacing-6) var(--spacing-16);
+          border-radius: var(--radius-16);
+          font-size: var(--font-size-14);
           font-weight: var(--font-weight-600);
+          white-space: nowrap;
+
+          @media (max-width: 480px) {
+            padding: var(--spacing-4) var(--spacing-12);
+            font-size: var(--font-size-12);
+          }
 
           &.wpm {
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: rgba(255, 255, 255, 0.25);
             color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
           }
 
           &.accuracy {
-            background: var(--white-alpha-20);
+            background: rgba(255, 255, 255, 0.15);
             color: var(--white);
-            border: var(--spacing-2) solid var(--white-alpha-33);
+            border: 1px solid rgba(255, 255, 255, 0.2);
           }
         }
       }
@@ -59,40 +143,57 @@
     .live-tracking-container {
       position: relative;
       width: 100%;
-      height: var(--spacing-32);
-      border-radius: var(--radius-16);
+      height: var(--spacing-48);
+      border-radius: var(--radius-24);
       overflow: visible;
-      background-color: var(--white-alpha-10);
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+
+      @media (max-width: 480px) {
+        height: var(--spacing-40);
+        border-radius: var(--radius-20);
+      }
 
       .completed-progress {
         height: 100%;
-        border-radius: var(--radius-16);
-        background: linear-gradient(90deg, #4facfe, var(--primary-gradient-start));
+        border-radius: var(--radius-24);
+        background: linear-gradient(90deg, rgba(79, 172, 254, 0.7), rgba(139, 109, 212, 0.7));
         transition: width 0.4s ease;
+
+        @media (max-width: 480px) {
+          border-radius: var(--radius-20);
+        }
       }
 
       .progress-indicator {
         position: absolute;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: var(--spacing-32);
-        height: var(--spacing-32);
+        width: var(--spacing-48);
+        height: var(--spacing-48);
         border-radius: 50%;
 
         display: flex;
         align-items: center;
         justify-content: center;
 
-        font-size: var(--font-size-14);
+        font-size: var(--font-size-18);
         font-weight: var(--font-weight-700);
         color: var(--primary-gradient-start);
 
         background: var(--white);
-        border: var(--spacing-2) solid var(--primary-gradient-start);
-        box-shadow: 0 var(--spacing-4) var(--spacing-12) var(--black-alpha-30);
+        border: 3px solid rgba(139, 109, 212, 0.9);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 
         pointer-events: none;
         transition: left 0.4s ease;
+
+        @media (max-width: 480px) {
+          width: var(--spacing-40);
+          height: var(--spacing-40);
+          font-size: var(--font-size-16);
+          border-width: 2px;
+        }
       }
 
       .progress-text {

@@ -7,9 +7,9 @@ import { AuthService } from '../identity/services/auth.service';
 import { IUser } from '../interfaces/auth.interfaces';
 import { IRoom } from '../interfaces/room.interface';
 import { Modal } from '../modal/modal';
+import { HttpService } from '../services/http.service';
 import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
-import { HttpService } from '../services/http.service';
 
 @Component({
   selector: 'app-homepage',
@@ -26,7 +26,11 @@ export class HomePage implements OnInit {
   showJoinModal = signal(false);
   showCreateModal = signal(false);
   roomName = signal<string>('');
-  userStats = signal<{ bestWpm: number; gamesPlayed: number; wins: number }>({ bestWpm: 0, gamesPlayed: 0, wins: 0 });
+  userStats = signal<{ bestWpm: number; gamesPlayed: number; wins: number }>({
+    bestWpm: 0,
+    gamesPlayed: 0,
+    wins: 0,
+  });
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -64,7 +68,7 @@ export class HomePage implements OnInit {
             this.userStats.set({
               bestWpm: response.data.bestWpm,
               gamesPlayed: response.data.gamesPlayed,
-              wins: response.data.wins
+              wins: response.data.wins,
             });
           }
         }

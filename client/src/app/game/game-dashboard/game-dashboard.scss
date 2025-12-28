@@ -13,7 +13,19 @@
   align-items: center;
   justify-content: center;
 
-  // BACKGROUND SVG
+  app-live-progress {
+    width: 100%;
+    max-width: 1400px;
+    z-index: 10;
+    padding: 0 var(--spacing-32);
+    margin-top: var(--spacing-20);
+
+    @media (max-width: 768px) {
+      padding: 0 var(--spacing-20);
+    }
+  }
+
+  // BACKGROUND SECTION
   .bg-svg-container {
     position: fixed;
     top: 0;
@@ -42,7 +54,7 @@
     }
   }
 
-  //countdown
+  // countdown overlay
   .countdown-overlay {
     position: fixed;
     inset: 0;
@@ -50,23 +62,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(139, 109, 212, 0.4);
+    background: var(--primary-alpha-15);
     backdrop-filter: blur(var(--shadow-blur-10));
 
     .countdown-timer {
       text-align: center;
       color: white;
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--white-alpha-10);
       padding: var(--spacing-48);
       border-radius: var(--radius-32);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(var(--shadow-blur-20));
+      border: 1px solid var(--white-alpha-20);
 
       .timer-display {
         font-size: var(--font-size-128);
         font-weight: var(--font-weight-700);
         margin: 0;
-        text-shadow: 0 0 var(--spacing-32) rgba(255, 255, 255, 0.5);
+        text-shadow: 0 0 var(--spacing-32) var(--white-alpha-50);
         animation: pulse 1s ease-in-out infinite alternate;
 
         @media (max-width: 768px) {
@@ -92,7 +104,7 @@
     }
   }
 
-  //game content
+  // game content section
   .game-content {
     position: relative;
     z-index: 10;
@@ -116,7 +128,7 @@
       transform: translateY(0);
     }
 
-    //completion
+    // completion overlay
     .completion-overlay {
       position: fixed;
       inset: 0;
@@ -124,18 +136,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(139, 109, 212, 0.6);
+      background: var(--primary-alpha-18);
       backdrop-filter: blur(var(--shadow-blur-10));
 
       .stats-card {
         text-align: center;
         color: white;
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--white-alpha-15);
         padding: var(--spacing-48);
         border-radius: var(--radius-32);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(var(--shadow-blur-20));
+        border: 1px solid var(--white-alpha-33);
+        box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-30);
 
         @media (max-width: 768px) {
           padding: var(--spacing-32);
@@ -194,16 +206,16 @@
       }
     }
 
-    //typing area
+    // typing area
     .typing-container {
       max-width: var(--size-960);
       margin: 0 auto var(--spacing-40);
       padding: var(--spacing-40);
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--white-alpha-15);
       border-radius: var(--radius-24);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(var(--shadow-blur-20));
+      border: 1px solid var(--white-alpha-33);
+      box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
 
       @media (max-width: 768px) {
         padding: var(--spacing-24);
@@ -217,7 +229,7 @@
 
       .stanza-box {
         padding: var(--spacing-24);
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--black-alpha-30);
         border-radius: var(--radius-16);
 
         @media (max-width: 768px) {
@@ -232,7 +244,7 @@
           font-size: var(--font-size-28);
           line-height: var(--line-height-44);
           color: var(--white-alpha-95);
-          text-shadow: 0 0 var(--shadow-blur-4) rgba(255, 255, 255, 0.4);
+          text-shadow: 0 0 var(--shadow-blur-4) var(--white-alpha-40);
           letter-spacing: normal;
           word-spacing: -0.25em;
 
@@ -251,7 +263,7 @@
             margin-right: 0;
             padding: var(--spacing-2) var(--spacing-4);
             border-radius: var(--radius-4);
-            transition: all 0.2s ease;
+            transition: var(--transition-smooth);
 
             &.pending {
               opacity: 0.35;
@@ -263,8 +275,8 @@
 
             &.active {
               opacity: 1;
-              background: rgba(255, 217, 61, 0.25);
-              box-shadow: 0 0 var(--shadow-blur-10) rgba(255, 217, 61, 0.4);
+              background: var(--gold-alpha-40);
+              box-shadow: 0 0 var(--shadow-blur-10) var(--gold-alpha-40);
             }
 
             .char {
@@ -300,7 +312,7 @@
   }
 }
 
-//animations
+// animations
 @keyframes pulse {
   from {
     transform: scale(1);

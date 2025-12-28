@@ -44,7 +44,7 @@ export class HttpService {
     return this.http.get<IUsersListResponse>(API_ENDPOINTS.USERS.LIST);
   }
 
-  getUserStats(): Observable<{data: IFetchStats}>{
-    return this.http.get<{data: IFetchStats}>(API_ENDPOINTS.LEADERBOARD.STATS);
+  getUserStats(): Observable<{ data: IFetchStats }> {
+    return this.http.get<{ data: IFetchStats }>(API_ENDPOINTS.LEADERBOARD.STATS);
   }
 }

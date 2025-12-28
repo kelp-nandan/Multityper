@@ -142,20 +142,19 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit("joined-room", { key: data.roomId, data: roomData });
   }
 
-
-  @SubscribeMessage('get-game-state')
+  @SubscribeMessage("get-game-state")
   async handleGameState(@MessageBody() roomId: string, @ConnectedSocket() client: Socket) {
     const roomData = await this.redisService.getRoom(roomId);
-    if(!roomData){
+    if (!roomData) {
       client.emit("join-room-error", {
-        message: "Room does not exist"
+        message: "Room does not exist",
       });
       return;
     }
     const userId = client.data.user.id;
-    if(!roomData.players.some((p: IPlayer) => p.userId === userId)) {
+    if (!roomData.players.some((p: IPlayer) => p.userId === userId)) {
       client.emit("join-room-error", {
-        message: "You does not belong to this room"
+        message: "You does not belong to this room",
       });
       return;
     }
@@ -253,8 +252,10 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       throw new WsException("Only room creator can start the game");
     }
 
-    if(roomData.players.length < 2 || roomData.players.length > 5) {
-      client.emit('join-room-error', { message: 'To start the game players should be minimum of 2 and maximum of 5' });
+    if (roomData.players.length < 2 || roomData.players.length > 5) {
+      client.emit("join-room-error", {
+        message: "To start the game players should be minimum of 2 and maximum of 5",
+      });
       return;
     }
 

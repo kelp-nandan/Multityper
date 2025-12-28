@@ -9,7 +9,7 @@ import { ParagraphModule } from "./paragraph/paragraph.module";
 import { RedisModule } from "./redis/redis.module";
 import { RoomsModule } from "./rooms/rooms.module";
 import { UsersModule } from "./users/users.module";
-import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { LeaderboardModule } from "./leaderboard/leaderboard.module";
 
 @Module({
   imports: [

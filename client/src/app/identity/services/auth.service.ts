@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { Observable, Subscription, interval } from 'rxjs';
 import { PROFILE_CHECK_TIMEOUT, TOKEN_CHECK_INTERVAL } from '../../constants';
-import { IAuthResponse, IRegisterRequest, IUser } from '../../interfaces/auth.interfaces';
+import { IAuthResponse, IUser } from '../../interfaces/auth.interfaces';
 import { HttpService } from '../../services/http.service';
 
 @Injectable({

@@ -53,8 +53,8 @@ export class GameLobby implements OnInit, OnDestroy {
         const createdBy = room.data.players?.find(
           (p: { isCreated: boolean; userId: number }) => p.isCreated,
         );
-        console.log("currentUser", currentUser);
-        console.log("createdBy", createdBy);
+        console.log('currentUser', currentUser);
+        console.log('createdBy', createdBy);
         this.isCreator.set(createdBy?.userId === currentUser?.userId);
       }
     });

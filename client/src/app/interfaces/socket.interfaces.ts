@@ -71,5 +71,5 @@ export interface ILeaderboardDisplay {
 export interface IFetchStats {
   gamesPlayed: number;
   wins: number;
-  bestWpm: number; 
+  bestWpm: number;
 }

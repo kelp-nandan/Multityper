@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { LeaderboardService } from './leaderboard.service';
-import { LeaderboardController } from './leaderboard.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { Module } from "@nestjs/common";
+import { LeaderboardService } from "./leaderboard.service";
+import { LeaderboardController } from "./leaderboard.controller";
+import { DatabaseModule } from "src/database/database.module";
 
 @Module({
   imports: [DatabaseModule],
   controllers: [LeaderboardController],
   providers: [LeaderboardService],
-  exports: [LeaderboardService]
+  exports: [LeaderboardService],
 })
 export class LeaderboardModule {}

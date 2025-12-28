@@ -18,9 +18,7 @@ import { SocketService } from '../../services/socket.service';
 })
 export class GameLobby implements OnInit, OnDestroy {
   room$!: Observable<IRoom | null>;
-  isCreator = signal<boolean>(false);
   private currentUser: IUser | null;
-  roomDetails = signal<IRoom | null>(null);
   private subscriptions: Subscription[] = [];
 
   private readonly roomService = inject(RoomService);
@@ -40,25 +38,22 @@ export class GameLobby implements OnInit, OnDestroy {
       this.router.navigate(['/homepage']);
       return;
     }
-    const currentRoom = this.roomService.getCurrentRoom();
+    
+    const currentRoom = this.roomService.getCurrentRoom();    
     if (!currentRoom || currentRoom.key !== roomId) {
       this.socketService.handleRestoreRoom(roomId);
     }
+    
     this.room$ = this.roomService.selectedRoom$;
+  }
 
-    const roomSub = this.roomService.selectedRoom$.subscribe((room: IRoom | null) => {
-      if (room) {
-        this.roomDetails.set(room);
-        const currentUser = this.authService.currentUser();
-        const createdBy = room.data.players?.find(
-          (p: { isCreated: boolean; userId: number }) => p.isCreated,
-        );
-        console.log('currentUser', currentUser);
-        console.log('createdBy', createdBy);
-        this.isCreator.set(createdBy?.userId === currentUser?.userId);
-      }
-    });
-    this.subscriptions.push(roomSub);
+  isCreator(room: IRoom): boolean {
+    const currentUser = this.authService.currentUser();
+    const createdBy = room.data.players?.find(
+      (p: { isCreated: boolean; userId: number }) => p.isCreated,
+    );
+    
+    return createdBy?.userId === currentUser?.id;
   }
 
   ngOnDestroy(): void {
@@ -82,8 +77,7 @@ export class GameLobby implements OnInit, OnDestroy {
   leaveBtnValidation(player: { userId: number; userName: string; isCreated: boolean }): boolean {
     return (
       !player.isCreated &&
-      player.userId === this.currentUser?.userId &&
-      !this.roomDetails()?.data.gameStarted
+      player.userId === this.currentUser?.id
     );
   }
 }

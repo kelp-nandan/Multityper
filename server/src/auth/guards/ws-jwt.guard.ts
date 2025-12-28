@@ -34,10 +34,10 @@ export class WsJwtGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      if (!payload?.sub) {
+      if (!payload?.id) {
         throw new UnauthorizedException("Invalid token payload");
       }
-      const user = await this.userRepository.findById(payload.sub);
+      const user = await this.userRepository.findById(payload.id);
       if (!user) {
         throw new UnauthorizedException("User not found");
       }
@@ -47,7 +47,7 @@ export class WsJwtGuard implements CanActivate {
         data: { user: { id: number; email: string; name: string } };
       };
       authenticatedClient.data.user = {
-        id: payload.sub,
+        id: payload.id,
         email: payload.email,
         name: payload.name,
       };

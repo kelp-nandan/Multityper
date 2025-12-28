@@ -20,7 +20,7 @@
       }
 
       <div class="players-footer">
-        @if (isCreator()) {
+        @if (isCreator(room)) {
           <button class="button-primary" (click)="startRace(room.key)">Start Game</button>
           <button class="button-secondary" (click)="destroyRace(room.key)">Destroy Game</button>
         } @else {

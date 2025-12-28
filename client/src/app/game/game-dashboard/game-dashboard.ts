@@ -83,7 +83,7 @@ export class GameDashboard implements OnInit, OnDestroy {
     this.currentRoomId = currentRoom?.key || '';
 
     const currentUser = this.authService.currentUser();
-    this.currentUserId = currentUser?.userId?.toString() || '';
+    this.currentUserId = currentUser?.id?.toString() || '';
   }
 
   ngOnInit(): void {
@@ -256,7 +256,7 @@ export class GameDashboard implements OnInit, OnDestroy {
     const totalChars = this.wordStates().reduce((acc, w) => acc + w.chars.length, 0);
 
     const typedChars = this.correctCount() + this.totalErrors();
-    const progress = Math.min(Math.round((typedChars / totalChars) * 100), 100);
+    const progress = Math.min(Math.round((this.correctCount() / totalChars) * 100), 100);
 
     const now = Date.now();
     const start = this.startTime() ?? now;

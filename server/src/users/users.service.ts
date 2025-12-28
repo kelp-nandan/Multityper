@@ -57,8 +57,7 @@ export class UsersService {
 
     const payload = {
       email: user.email,
-      sub: user.id,
-      userId: user.id,
+      id: user.id,
       name: user.name,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
@@ -89,7 +88,7 @@ export class UsersService {
     // Generate stateless refresh token with longer expiry
     const refreshPayload = {
       sub: userId,
-      userId: userId,
+      id: userId,
       type: "refresh",
     };
     return this.jwtService.sign(refreshPayload, { expiresIn: "7d" });
@@ -105,7 +104,7 @@ export class UsersService {
       }
 
       // make sure user still exists
-      const user = await this.userRepository.findById(decoded.userId);
+      const user = await this.userRepository.findById(decoded.id);
       if (!user) {
         throw new UnauthorizedException("User not found");
       }
@@ -113,8 +112,7 @@ export class UsersService {
       // Generate new access token with fresh user data
       const payload: IJwtPayload = {
         email: user.email,
-        sub: user.id,
-        userId: user.id,
+        id: user.id,
         name: user.name,
       };
       const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });

@@ -1,6 +1,5 @@
 export interface IJwtPayload {
-  sub: number;
-  userId: number;
+  id: number;
   name: string;
   email: string;
   iat?: number;
@@ -8,8 +7,7 @@ export interface IJwtPayload {
 }
 
 export interface IRefreshTokenPayload {
-  sub: number;
-  userId: number;
+  id: number;
   type: "refresh";
   iat?: number;
   exp?: number;

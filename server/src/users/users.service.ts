@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { JWT_ACCESS_TOKEN_EXPIRY, JWT_REFRESH_TOKEN_EXPIRY } from "../constants";
 import { UserRepository } from "../database/repositories";
 import { IJwtPayload, IRefreshTokenPayload } from "../interfaces/auth.interface";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -12,7 +13,7 @@ export class UsersService {
   constructor(
     private jwtService: JwtService,
     private userRepository: UserRepository,
-  ) {}
+  ) { }
 
   async register(createUserDto: CreateUserDto): Promise<IUserProfile> {
     const { name, email, password } = createUserDto;
@@ -86,22 +87,16 @@ export class UsersService {
 
   private generateRefreshToken(userId: number): string {
     // Generate stateless refresh token with longer expiry
-    const refreshPayload = {
-      sub: userId,
+    const refreshPayload: IRefreshTokenPayload = {
       id: userId,
-      type: "refresh",
     };
-    return this.jwtService.sign(refreshPayload, { expiresIn: "7d" });
+    return this.jwtService.sign(refreshPayload, { expiresIn: JWT_REFRESH_TOKEN_EXPIRY });
   }
 
   async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
       // Verify the refresh token JWT
       const decoded = this.jwtService.verify<IRefreshTokenPayload>(refreshToken);
-
-      if (decoded.type !== "refresh") {
-        throw new UnauthorizedException("Invalid refresh token");
-      }
 
       // make sure user still exists
       const user = await this.userRepository.findById(decoded.id);
@@ -115,16 +110,12 @@ export class UsersService {
         id: user.id,
         name: user.name,
       };
-      const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
+      const accessToken = this.jwtService.sign(payload, { expiresIn: JWT_ACCESS_TOKEN_EXPIRY });
 
       return { accessToken };
     } catch (_error) {
       throw new UnauthorizedException("Invalid or expired refresh token");
     }
-  }
-
-  revokeRefreshToken(_refreshToken: string): void {
-    // Stateless tokens expire naturally - no action needed
   }
 
   async findAll(): Promise<IUserProfile[]> {
@@ -147,7 +138,7 @@ export class UsersService {
       name: user.name,
     };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: JWT_ACCESS_TOKEN_EXPIRY });
     const refreshToken = this.generateRefreshToken(user.id);
 
     return { accessToken, refreshToken };

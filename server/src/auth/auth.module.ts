@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { JWT_ACCESS_TOKEN_EXPIRY } from "../constants";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { JwtStrategy } from "./strategy/jwt.strategy";
@@ -17,7 +18,7 @@ import { TokenController } from "./token.controller";
         return {
           secret: configService.get<string>("jwt.secret"),
           signOptions: {
-            expiresIn: "15m",
+            expiresIn: JWT_ACCESS_TOKEN_EXPIRY,
           },
         };
       },
@@ -28,4 +29,4 @@ import { TokenController } from "./token.controller";
   providers: [JwtStrategy],
   exports: [JwtModule],
 })
-export class AuthModule {}
+export class AuthModule { }

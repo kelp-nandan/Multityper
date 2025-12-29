@@ -24,7 +24,5 @@ async function bootstrap() {
   });
 
   await app.listen(ENV.PORT);
-
-  // Server startup completed
 }
 void bootstrap();

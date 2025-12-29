@@ -1,16 +1,15 @@
 import { Controller, Get, Request, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ErrorHandler } from "../common/error-handler";
-import { IUserProfile } from "./interfaces";
+import type { IUserRequest, IUsersListResponse, IUserProfileResponse } from "../interfaces/response.interface";
 import { UsersService } from "./users.service";
-
 @Controller("api/users")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(): Promise<{ message: string; data: IUserProfile[] }> {
+  async findAll(): Promise<IUsersListResponse> {
     try {
       const users = await this.usersService.findAll();
       return {
@@ -24,10 +23,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get("profile")
-  getProfile(@Request() req: { user: { id: number; email: string; name: string } }): {
-    message: string;
-    data: { user: { id: number; email: string; name: string } };
-  } {
+  getProfile(@Request() req: IUserRequest): IUserProfileResponse {
     try {
       return {
         message: "Profile retrieved successfully",

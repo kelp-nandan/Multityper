@@ -48,7 +48,6 @@ export class HomePage implements OnInit {
       return;
     }
     const currentUser = this.authService.currentUser();
-    console.log(currentUser);
     if (currentUser) {
       const cleanUser = currentUser;
       this.user.set(cleanUser);
@@ -64,7 +63,6 @@ export class HomePage implements OnInit {
       next: (response) => {
         this.isLoading.set(false);
         if (response.data) {
-          console.log('User stats fetched:', response.data);
           const currentStats = this.user();
           if (currentStats) {
             this.userStats.set({

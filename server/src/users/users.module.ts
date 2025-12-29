@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { JWT_ACCESS_TOKEN_EXPIRY } from "src/constants";
 import { DatabaseModule } from "src/database/database.module";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
@@ -14,7 +15,7 @@ import { UsersService } from "./users.service";
         return {
           secret: configService.get<string>("jwt.secret"),
           signOptions: {
-            expiresIn: "15m",
+            expiresIn: JWT_ACCESS_TOKEN_EXPIRY,
           },
         };
       },
@@ -25,4 +26,4 @@ import { UsersService } from "./users.service";
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

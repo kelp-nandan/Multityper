@@ -17,7 +17,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: var(--z-index-background);
     overflow: hidden;
   }
 
@@ -32,7 +32,7 @@
 
   .header-section {
     position: relative;
-    z-index: 10;
+    z-index: var(--z-index-header);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -59,7 +59,7 @@
       justify-content: center;
       font-weight: var(--font-weight-700);
       font-size: var(--font-size-24);
-      border: 3px solid var(--white);
+      border: var(--border-thick) var(--white);
       box-shadow: 0 var(--spacing-8) var(--spacing-24) var(--black-alpha-10);
     }
 
@@ -73,7 +73,7 @@
 
   .logout-btn {
     background: var(--white-alpha-90);
-    border: 2px solid var(--white);
+    border: var(--border-medium) var(--white);
     border-radius: var(--radius-12);
     padding: var(--spacing-12) var(--spacing-24);
     color: var(--primary-gradient-start);
@@ -94,8 +94,8 @@
     }
 
     svg {
-      width: var(--size-20);
-      height: var(--size-20);
+      width: var(--icon-sm);
+      height: var(--icon-sm);
     }
   }
 
@@ -103,7 +103,7 @@
 
   .main-content {
     position: relative;
-    z-index: 10;
+    z-index: var(--z-index-content);
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -113,7 +113,7 @@
     padding-left: var(--spacing-330);
 
     text-align: center;
-    max-width: 1200px;
+    max-width: var(--size-1200);
     margin: 0 auto;
 
     @media (max-width: 768px) {
@@ -152,7 +152,7 @@
     gap: var(--spacing-24);
     margin-bottom: var(--spacing-32);
     width: 100%;
-    max-width: 900px;
+    max-width: var(--size-900);
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -169,7 +169,7 @@
     flex: 1;
     box-shadow: 0 var(--spacing-8) var(--spacing-32) var(--black-alpha-10);
     transition: all 0.3s ease;
-    border: 2px solid var(--white-alpha-20);
+    border: var(--border-medium) var(--white-alpha-20);
 
     @media (max-width: 768px) {
       width: 100%;
@@ -235,14 +235,14 @@
     border-radius: var(--radius-20);
     padding: var(--spacing-24) var(--spacing-40);
     box-shadow: 0 var(--spacing-8) var(--spacing-32) var(--black-alpha-10);
-    border: 2px solid var(--white-alpha-20);
+    border: var(--border-medium) var(--white-alpha-20);
     display: flex;
     align-items: center;
     gap: var(--spacing-32);
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    max-width: 900px;
+    max-width: var(--size-900);
 
     @media (max-width: 768px) {
       flex-direction: column;

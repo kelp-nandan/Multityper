@@ -41,6 +41,7 @@
   --error-bg: #fee2e2;
   --error-border: #fca5a5;
   --error-text: #dc2626;
+  --danger: #dc2626;
   --correct-text: #4caf50;
   --incorrect-text: #ff5252;
 
@@ -82,9 +83,7 @@
   --gray-alpha-12: #2425261f;
 
   // Gradients
-  --primary-gradient: linear-gradient(
-    135deg,
-    var(--primary-gradient-start) 0%,
-    var(--primary-gradient-end) 100%
-  );
+  --primary-gradient: linear-gradient(135deg,
+      var(--primary-gradient-start) 0%,
+      var(--primary-gradient-end) 100%);
 }

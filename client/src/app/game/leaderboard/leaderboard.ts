@@ -25,8 +25,6 @@ export class LeaderBoard implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  constructor() {}
-
   ngOnInit(): void {
     this.loadFinalResults();
     this.animationPopper();

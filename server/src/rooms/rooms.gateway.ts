@@ -40,7 +40,8 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     private redisService: RedisService,
     private paragraphService: ParagraphService,
     private userRepository: UserRepository,
-  ) {}
+  ) { }
+
   @WebSocketServer()
   server: Server;
 
@@ -143,7 +144,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("get-game-state")
-  async handleGameState(@MessageBody() roomId: string, @ConnectedSocket() client: Socket) {
+  async handleGameState(@MessageBody() roomId: string, @ConnectedSocket() client: IAuthenticatedSocket) {
     const roomData = await this.redisService.getRoom(roomId);
     if (!roomData) {
       client.emit("join-room-error", {
@@ -154,7 +155,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = client.data.user.id;
     if (!roomData.players.some((p: IPlayer) => p.userId === userId)) {
       client.emit("join-room-error", {
-        message: "You does not belong to this room",
+        message: "You do not belong to this room",
       });
       return;
     }
@@ -330,7 +331,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(data.roomId).emit("room-updated", { key: data.roomId, data: roomData });
 
       // see if everyone's done
-      const allFinished = roomData.players.every((p: IPlayer) => p.stats?.finished === true);
+      const allFinished = roomData.players.every((p: IPlayer) => p.stats?.finished);
 
       if (allFinished) {
         const sortedPlayers = [...roomData.players].sort((a, b) => {
@@ -419,7 +420,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       });
     } catch (error) {
       // Error handling can be added here if needed
-      console.log(error);
+      this.logger.error("Error handling live progress", error);
     }
   }
 }

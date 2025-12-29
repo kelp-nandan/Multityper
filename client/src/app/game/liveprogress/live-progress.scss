@@ -11,16 +11,16 @@
 
 .live-progress-container {
   position: relative;
-  z-index: 9;
+  z-index: var(--z-index-content);
   width: 90%;
   max-width: 100%;
   margin: 0;
   padding: var(--spacing-12) var(--spacing-64);
   background: var(--white-alpha-15);
-  border-radius: var(--radius-20);
+  border-radius: var(--radius-24);
   backdrop-filter: blur(var(--shadow-blur-20));
-  border: 1px solid var(--white-alpha-33);
-  box-shadow: 0 var(--spacing-4) var(--shadow-blur-20) var(--black-alpha-10);
+  border: var(--border-thin) var(--white-alpha-33);
+  box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
 
   @media (max-width: 768px) {
     padding: var(--spacing-10) var(--spacing-24);
@@ -68,7 +68,7 @@
           height: var(--spacing-28);
           border-radius: 50%;
           background: var(--white-alpha-25);
-          border: 1px solid var(--white-alpha-40);
+          border: var(--border-thin) var(--white-alpha-40);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -100,13 +100,13 @@
           &.wpm {
             background: var(--white-alpha-25);
             color: var(--white);
-            border: 1px solid var(--white-alpha-20);
+            border: var(--border-thin) var(--white-alpha-20);
           }
 
           &.accuracy {
             background: var(--white-alpha-15);
             color: var(--white);
-            border: 1px solid var(--white-alpha-15);
+            border: var(--border-thin) var(--white-alpha-15);
           }
         }
       }
@@ -119,16 +119,14 @@
       border-radius: var(--radius-8);
       overflow: visible;
       background-color: var(--white-alpha-15);
-      border: 1px solid var(--white-alpha-20);
+      border: var(--border-thin) var(--white-alpha-20);
 
       .completed-progress {
         height: 100%;
         border-radius: var(--radius-8);
-        background: linear-gradient(
-          90deg,
-          var(--primary-gradient-start),
-          var(--primary-gradient-end)
-        );
+        background: linear-gradient(90deg,
+            var(--primary-gradient-start),
+            var(--primary-gradient-end));
         transition: width 0.4s ease;
       }
 
@@ -146,7 +144,7 @@
         font-weight: var(--font-weight-800);
         color: var(--primary-gradient-start);
         background: var(--white);
-        border: 2px solid var(--primary-gradient-end);
+        border: var(--border-medium) var(--primary-gradient-end);
         box-shadow: 0 var(--spacing-2) var(--shadow-blur-8) var(--black-alpha-30);
         pointer-events: none;
         transition: left 0.4s ease;

@@ -10,15 +10,13 @@ import {
   IRegisterRequest,
   IUsersListResponse,
 } from '../interfaces/auth.interfaces';
-import { IFetchStats } from '../interfaces';
+import { IFetchStats } from '../interfaces/socket.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
   private readonly http = inject(HttpClient);
-
-  constructor() {}
 
   login(loginData: ILoginRequest): Observable<IAuthResponse> {
     return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.LOGIN, loginData);

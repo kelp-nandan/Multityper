@@ -2,7 +2,7 @@ import { inject, Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-
+import { environment } from '../../environments/environment';
 import { IRoom } from '../interfaces/room.interface';
 import { RoomService } from './room.service';
 
@@ -15,7 +15,7 @@ export class SocketService {
   private readonly router = inject(Router);
 
   constructor() {
-    this.socket = io('/', {
+    this.socket = io(environment.socketUrl, {
       withCredentials: true,
     });
 

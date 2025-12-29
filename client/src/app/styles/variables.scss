@@ -66,7 +66,17 @@ $base-font-size: 16px;
   --size-420: #{rem(420px)};
   --size-480: #{rem(480px)};
   --size-640: #{rem(640px)};
+  --size-900: #{rem(900px)};
   --size-960: #{rem(960px)};
+  --size-1200: #{rem(1200px)};
+  --size-1400: #{rem(1400px)};
+
+  // Icon Sizes
+  --icon-xs: #{rem(16px)};
+  --icon-sm: #{rem(20px)};
+  --icon-md: #{rem(24px)};
+  --icon-lg: #{rem(32px)};
+  --icon-xl: #{rem(40px)};
 
   // Shadows
   --shadow-blur-4: #{rem(4px)};
@@ -77,14 +87,19 @@ $base-font-size: 16px;
   --shadow-blur-32: #{rem(32px)};
 
   // Z-index (Stacking Priority)
+  --z-index-background: 0;
   --z-index-base: 1;
-  --z-index-dropdown: 2;
-  --z-index-sticky: 3;
-  --z-index-fixed: 4;
-  --z-index-overlay: 5;
-  --z-index-countdown: 20;
-  --z-index-modal: 1000;
-  --z-index-tooltip: 1100;
+  --z-index-content: 2;
+  --z-index-header: 3;
+  --z-index-overlay: 4;
+  --z-index-countdown: 5;
+  --z-index-modal: 6;
+  --z-index-tooltip: 7;
+
+  // Borders
+  --border-thin: 1px solid;
+  --border-medium: 2px solid;
+  --border-thick: 3px solid;
 
   // Transitions
   --transition-smooth: all 0.2s ease;

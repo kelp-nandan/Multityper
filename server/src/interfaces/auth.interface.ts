@@ -8,7 +8,6 @@ export interface IJwtPayload {
 
 export interface IRefreshTokenPayload {
   id: number;
-  type: "refresh";
   iat?: number;
   exp?: number;
 }

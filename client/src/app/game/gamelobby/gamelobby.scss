@@ -73,7 +73,7 @@
       }
 
       .leave-room-btn {
-        background-color: red;
+        background-color: var(--danger);
         color: var(--white);
         padding: var(--spacing-4) var(--spacing-10);
         border-radius: var(--radius-4);
@@ -152,6 +152,7 @@
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
@@ -162,7 +163,7 @@
   }
 }
 
-@media (max-width: 37.5rem) {
+@media (max-width: 600px) {
   .lobby-container {
     .game-title {
       font-size: var(--font-size-40);

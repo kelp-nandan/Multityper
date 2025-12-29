@@ -3,20 +3,20 @@ import type { Request, Response } from "express";
 import { ErrorHandler } from "../common/error-handler";
 import { ENV } from "../config/env.config";
 import { ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from "../constants";
+import { IAuthSuccessResponse } from "../interfaces/response.interface";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { LoginUserDto } from "../users/dto/login-user.dto";
-import { IUserProfile } from "../users/interfaces";
 import { UsersService } from "../users/users.service";
 
 @Controller("api/auth")
 export class AuthController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post("register")
   async register(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<{ message: string; data: { user: IUserProfile } }> {
+  ): Promise<IAuthSuccessResponse> {
     try {
       const user = await this.usersService.register(createUserDto);
       const { accessToken, refreshToken } = await this.usersService.generateTokensForUser(user.id);
@@ -48,7 +48,7 @@ export class AuthController {
   async login(
     @Body(ValidationPipe) loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<{ message: string; data: { user: IUserProfile } }> {
+  ): Promise<IAuthSuccessResponse> {
     try {
       const { user, accessToken, refreshToken } = await this.usersService.login(loginUserDto);
 
@@ -80,22 +80,9 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): { message: string } {
-    try {
-      const refreshToken = request.cookies?.refresh_token as string | undefined;
+    response.clearCookie("access_token");
+    response.clearCookie("refresh_token");
 
-      if (refreshToken) {
-        this.usersService.revokeRefreshToken(refreshToken);
-      }
-
-      response.clearCookie("access_token");
-      response.clearCookie("refresh_token");
-
-      return { message: "Logged out successfully" };
-    } catch (_error) {
-      response.clearCookie("access_token");
-      response.clearCookie("refresh_token");
-
-      return { message: "Logged out successfully" };
-    }
+    return { message: "Logged out successfully" };
   }
 }

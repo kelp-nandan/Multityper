@@ -15,8 +15,8 @@
 
   app-live-progress {
     width: 100%;
-    max-width: var(--size-1400);
-    z-index: var(--z-index-content);
+    max-width: var(--game-content-max-width);
+    z-index: 2;
     padding: 0 var(--spacing-32);
     margin-top: var(--spacing-20);
 
@@ -32,7 +32,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: var(--z-index-background);
+    z-index: 0;
     overflow: hidden;
 
     @media (max-width: 768px) {
@@ -58,7 +58,7 @@
   .countdown-overlay {
     position: fixed;
     inset: 0;
-    z-index: var(--z-index-countdown);
+    z-index: 5;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,7 +72,7 @@
       padding: var(--spacing-48);
       border-radius: var(--radius-32);
       backdrop-filter: blur(var(--shadow-blur-20));
-      border: var(--border-thin) var(--white-alpha-20);
+      border: var(--border-thin) solid var(--white-alpha-20);
 
       .timer-display {
         font-size: var(--font-size-128);
@@ -107,13 +107,13 @@
   // game content section
   .game-content {
     position: relative;
-    z-index: var(--z-index-content);
+    z-index: 2;
     padding: var(--spacing-32);
     opacity: 0;
     transform: translateY(var(--spacing-20));
     transition: all 0.4s ease;
     width: 100%;
-    max-width: var(--size-1400);
+    max-width: var(--game-content-max-width);
 
     @media (max-width: 768px) {
       padding: var(--spacing-20);
@@ -132,7 +132,7 @@
     .completion-overlay {
       position: fixed;
       inset: 0;
-      z-index: var(--z-index-overlay);
+      z-index: 4;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -146,7 +146,7 @@
         padding: var(--spacing-48);
         border-radius: var(--radius-32);
         backdrop-filter: blur(var(--shadow-blur-20));
-        border: var(--border-thin) var(--white-alpha-33);
+        border: var(--border-thin) solid var(--white-alpha-33);
         box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-30);
 
         @media (max-width: 768px) {
@@ -208,13 +208,13 @@
 
     // typing area
     .typing-container {
-      max-width: var(--size-960);
+      max-width: var(--practice-stats-max-width);
       margin: 0 auto var(--spacing-40);
       padding: var(--spacing-40);
       background: var(--white-alpha-15);
       border-radius: var(--radius-24);
       backdrop-filter: blur(var(--shadow-blur-20));
-      border: var(--border-thin) var(--white-alpha-33);
+      border: var(--border-thin) solid var(--white-alpha-33);
       box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
 
       @media (max-width: 768px) {

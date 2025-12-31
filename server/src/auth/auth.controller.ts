@@ -23,19 +23,14 @@ export class AuthController {
 
       response.cookie("access_token", accessToken, {
         httpOnly: true,
-        // secure: ENV.isProduction(),
-        secure:true,
-        // sameSite: "lax",
+        secure: true,
         sameSite: "none",
         maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       response.cookie("refresh_token", refreshToken, {
         httpOnly: true,
-        // secure: ENV.isProduction(),
-        secure:true,
-
-        // sameSite: "lax",
+        secure: true,
         sameSite: "none",
         maxAge: REFRESH_TOKEN_MAX_AGE,
       });
@@ -59,9 +54,7 @@ export class AuthController {
 
       response.cookie("access_token", accessToken, {
         httpOnly: true,
-        // secure: ENV.isProduction(),
-        secure:true,
-        // sameSite: "lax",
+        secure: true,
         sameSite: "none",
         maxAge: ACCESS_TOKEN_MAX_AGE,
       });
@@ -69,7 +62,6 @@ export class AuthController {
       response.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: true,
-        // sameSite: "lax",
         sameSite: "none",
         maxAge: REFRESH_TOKEN_MAX_AGE,
       });

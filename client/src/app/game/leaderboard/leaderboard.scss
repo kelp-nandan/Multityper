@@ -24,7 +24,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: var(--z-index-background);
+    z-index: 0;
     overflow: hidden;
   }
 
@@ -38,9 +38,9 @@
   // Main Content
   .leaderboard-content {
     position: relative;
-    z-index: var(--z-index-base);
+    z-index: 1;
     width: 100%;
-    max-width: var(--size-960);
+    max-width: var(--leaderboard-container-max-width);
     display: flex;
     flex-direction: column;
     gap: var(--spacing-32);
@@ -55,7 +55,7 @@
     background: var(--white-alpha-15);
     border-radius: var(--radius-24);
     backdrop-filter: blur(var(--shadow-blur-20));
-    border: var(--border-thin) var(--white-alpha-20);
+    border: var(--border-thin) solid var(--white-alpha-20);
     box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
     padding: var(--spacing-32);
 
@@ -204,10 +204,10 @@
 
             .player-avatar-small {
               width: var(--spacing-32);
-              height: var(--spacing-32);
+              height: var(--crown-icon-height);
               border-radius: 50%;
               background: var(--primary-gradient);
-              border: var(--border-medium) var(--white-alpha-40);
+              border: var(--border-medium) solid var(--white-alpha-40);
               display: flex;
               align-items: center;
               justify-content: center;
@@ -218,7 +218,7 @@
 
               @media (max-width: 480px) {
                 width: var(--spacing-28);
-                height: var(--spacing-28);
+                height: var(--rank-badge-size);
                 font-size: var(--font-size-12);
               }
             }
@@ -261,7 +261,7 @@
         &.btn-primary {
           background: var(--white-alpha-25);
           color: var(--white);
-          border: var(--border-thin) var(--white-alpha-33);
+          border: var(--border-thin) solid var(--white-alpha-33);
 
           &:hover {
             background: var(--white-alpha-33);
@@ -272,7 +272,7 @@
         &.btn-secondary {
           background: var(--white-alpha-15);
           color: var(--white);
-          border: var(--border-thin) var(--white-alpha-20);
+          border: var(--border-thin) solid var(--white-alpha-20);
 
           &:hover {
             background: var(--white-alpha-20);

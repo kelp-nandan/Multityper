@@ -11,7 +11,7 @@
 
 .live-progress-container {
   position: relative;
-  z-index: var(--z-index-content);
+  z-index: 2;
   width: 90%;
   max-width: 100%;
   margin: 0;
@@ -19,7 +19,7 @@
   background: var(--white-alpha-15);
   border-radius: var(--radius-24);
   backdrop-filter: blur(var(--shadow-blur-20));
-  border: var(--border-thin) var(--white-alpha-33);
+  border: var(--border-thin) solid var(--white-alpha-33);
   box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
 
   @media (max-width: 768px) {
@@ -65,10 +65,10 @@
 
         .player-avatar {
           width: var(--spacing-28);
-          height: var(--spacing-28);
+          height: var(--player-avatar-height);
           border-radius: 50%;
           background: var(--white-alpha-25);
-          border: var(--border-thin) var(--white-alpha-40);
+          border: var(--border-thin) solid var(--white-alpha-40);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -100,13 +100,13 @@
           &.wpm {
             background: var(--white-alpha-25);
             color: var(--white);
-            border: var(--border-thin) var(--white-alpha-20);
+            border: var(--border-thin) solid var(--white-alpha-20);
           }
 
           &.accuracy {
             background: var(--white-alpha-15);
             color: var(--white);
-            border: var(--border-thin) var(--white-alpha-15);
+            border: var(--border-thin) solid var(--white-alpha-15);
           }
         }
       }
@@ -115,11 +115,11 @@
     .live-tracking-container {
       position: relative;
       width: 100%;
-      height: var(--spacing-10);
+      height: var(--progress-bar-height);
       border-radius: var(--radius-8);
       overflow: visible;
       background-color: var(--white-alpha-15);
-      border: var(--border-thin) var(--white-alpha-20);
+      border: var(--border-thin) solid var(--white-alpha-20);
 
       .completed-progress {
         height: 100%;
@@ -134,8 +134,8 @@
         position: absolute;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: var(--spacing-22);
-        height: var(--spacing-22);
+        width: var(--progress-avatar-size);
+        height: var(--progress-avatar-size);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -144,7 +144,7 @@
         font-weight: var(--font-weight-800);
         color: var(--primary-gradient-start);
         background: var(--white);
-        border: var(--border-medium) var(--primary-gradient-end);
+        border: var(--border-medium) solid var(--primary-gradient-end);
         box-shadow: 0 var(--spacing-2) var(--shadow-blur-8) var(--black-alpha-30);
         pointer-events: none;
         transition: left 0.4s ease;

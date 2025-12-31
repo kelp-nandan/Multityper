@@ -10,7 +10,6 @@ export class LeaderboardController {
   @Get("getStats")
   @UseGuards(JwtAuthGuard)
   async handleFetchStats(@Request() req: IUserRequest) {
-    const data = await this.leaderboardService.fetchStats(req.user.id);
-    return data;
+    return await this.leaderboardService.fetchStats(req.user.id);
   }
 }

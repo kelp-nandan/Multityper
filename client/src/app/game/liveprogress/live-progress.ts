@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 
 import { IRoom } from '../../interfaces/room.interface';
 import { IPlayerData } from '../../interfaces/socket.interfaces';
@@ -13,7 +13,7 @@ import { SocketService } from '../../services/socket.service';
   templateUrl: './live-progress.html',
   styleUrls: ['./live-progress.scss'],
 })
-export class LiveProgress implements OnInit, OnDestroy {
+export class LiveProgress implements OnInit {
   playersProgress = signal<IPlayerData[]>([]);
 
   private readonly roomService = inject(RoomService);
@@ -34,7 +34,5 @@ export class LiveProgress implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    // this.socket.off('room-updated');
-  }
+  
 }

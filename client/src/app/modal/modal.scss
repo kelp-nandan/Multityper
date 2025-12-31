@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: var(--z-index-modal);
+  z-index: 6;
   opacity: 0;
   visibility: hidden;
   transition:
@@ -25,10 +25,9 @@
     border-radius: var(--radius-12);
     box-shadow: 0 var(--spacing-8) var(--spacing-32) var(--gray-alpha-12);
     width: 92%;
-    max-width: var(--size-480);
+    max-width: var(--modal-box-max-width);
     max-height: 85vh;
     overflow-y: auto;
-    // transform: translateY(var(--spacing-6)) scale(0.99);
     transform: translateY(0) scale(1);
     opacity: 1;
     transition:
@@ -52,8 +51,8 @@
       }
 
       .modal-close-btn {
-        width: var(--spacing-40);
-        height: var(--spacing-40);
+        width: var(--modal-close-btn-size);
+        height: var(--modal-close-btn-size);
         border-radius: var(--radius-8);
         background: var(--white-alpha-08);
         border: none;
@@ -82,7 +81,7 @@
       gap: var(--spacing-10);
       padding: var(--spacing-16) var(--spacing-20);
       border-top: var(--spacing-2) solid var(--light-border);
-      min-height: var(--spacing-60);
+      min-height: var(--modal-footer-min-height);
 
       .modal-btn {
         padding: var(--spacing-10) var(--spacing-20);
@@ -92,8 +91,8 @@
         cursor: pointer;
         transition: all 0.2s ease;
         outline: none;
-        min-width: var(--spacing-80);
-        min-height: var(--spacing-36);
+        min-width: var(--modal-btn-min-width);
+        min-height: var(--modal-btn-min-height);
         display: inline-block;
         text-align: center;
 

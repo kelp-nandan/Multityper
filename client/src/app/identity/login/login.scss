@@ -28,7 +28,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: var(--z-index-background);
+  z-index: 0;
   overflow: hidden;
 
   @media (max-width: 1024px) {
@@ -56,16 +56,16 @@
 .auth-glass-card {
   position: relative;
   width: 100%;
-  max-width: var(--size-420);
+  max-width: var(--login-box-max-width);
   padding: var(--spacing-48) var(--spacing-44);
   border-radius: var(--radius-32);
   background: var(--white-alpha-95);
   backdrop-filter: blur(var(--shadow-blur-10));
   -webkit-backdrop-filter: blur(var(--shadow-blur-10));
   box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-32) var(--black-alpha-10);
-  border: var(--border-thin) var(--white-alpha-33);
+  border: var(--border-thin) solid var(--white-alpha-33);
   animation: fadeUp 0.6s ease;
-  z-index: var(--z-index-content);
+  z-index: 2;
   flex-shrink: 0;
 
   @media (max-width: 1024px) {
@@ -194,7 +194,7 @@
     input {
       padding: var(--spacing-14) var(--spacing-16);
       border-radius: var(--radius-14);
-      border: var(--border-thin) var(--input-border);
+      border: var(--border-thin) solid var(--input-border);
       background: var(--white-alpha-70);
       font-size: var(--font-size-16);
       box-shadow: inset 0 0 0 1px var(--black-alpha-05);
@@ -253,7 +253,7 @@
     gap: var(--spacing-6);
 
     span {
-      width: var(--size-8);
+      width: var(--password-toggle-icon-width);
       height: var(--size-8);
       border-radius: 50%;
       background: var(--light-gray-text);

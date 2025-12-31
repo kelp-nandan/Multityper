@@ -17,7 +17,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: var(--z-index-background);
+    z-index: 0;
     overflow: hidden;
   }
 
@@ -32,7 +32,7 @@
 
   .header-section {
     position: relative;
-    z-index: var(--z-index-header);
+    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,7 +49,7 @@
     gap: var(--spacing-12);
 
     .avatar {
-      width: var(--size-56);
+      width: var(--trophy-icon-width);
       height: var(--size-56);
       border-radius: 50%;
       background: var(--white-alpha-90);
@@ -59,7 +59,7 @@
       justify-content: center;
       font-weight: var(--font-weight-700);
       font-size: var(--font-size-24);
-      border: var(--border-thick) var(--white);
+      border: var(--border-thick) solid var(--white);
       box-shadow: 0 var(--spacing-8) var(--spacing-24) var(--black-alpha-10);
     }
 
@@ -73,7 +73,7 @@
 
   .logout-btn {
     background: var(--white-alpha-90);
-    border: var(--border-medium) var(--white);
+    border: var(--border-medium) solid var(--white);
     border-radius: var(--radius-12);
     padding: var(--spacing-12) var(--spacing-24);
     color: var(--primary-gradient-start);
@@ -103,7 +103,7 @@
 
   .main-content {
     position: relative;
-    z-index: var(--z-index-content);
+    z-index: 2;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -113,7 +113,7 @@
     padding-left: var(--spacing-330);
 
     text-align: center;
-    max-width: var(--size-1200);
+    max-width: var(--features-section-max-width);
     margin: 0 auto;
 
     @media (max-width: 768px) {
@@ -152,7 +152,7 @@
     gap: var(--spacing-24);
     margin-bottom: var(--spacing-32);
     width: 100%;
-    max-width: var(--size-900);
+    max-width: var(--how-it-works-max-width);
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -169,7 +169,7 @@
     flex: 1;
     box-shadow: 0 var(--spacing-8) var(--spacing-32) var(--black-alpha-10);
     transition: all 0.3s ease;
-    border: var(--border-medium) var(--white-alpha-20);
+    border: var(--border-medium) solid var(--white-alpha-20);
 
     @media (max-width: 768px) {
       width: 100%;
@@ -235,14 +235,14 @@
     border-radius: var(--radius-20);
     padding: var(--spacing-24) var(--spacing-40);
     box-shadow: 0 var(--spacing-8) var(--spacing-32) var(--black-alpha-10);
-    border: var(--border-medium) var(--white-alpha-20);
+    border: var(--border-medium) solid var(--white-alpha-20);
     display: flex;
     align-items: center;
     gap: var(--spacing-32);
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    max-width: var(--size-900);
+    max-width: var(--cta-section-max-width);
 
     @media (max-width: 768px) {
       flex-direction: column;

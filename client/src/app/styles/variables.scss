@@ -96,12 +96,51 @@ $base-font-size: 16px;
   --z-index-modal: 6;
   --z-index-tooltip: 7;
 
-  // Borders
-  --border-thin: 1px solid;
-  --border-medium: 2px solid;
-  --border-thick: 3px solid;
+  // Borders (width only, style and color applied separately)
+  --border-thin: 1px;
+  --border-medium: 2px;
+  --border-thick: 3px;
 
   // Transitions
   --transition-smooth: all 0.2s ease;
   --transition-transform: transform 0.2s ease;
+
+
+  // Semantic Component-Specific Variables
+
+  // Game Dashboard
+  --game-content-max-width: #{rem(1400px)};
+  --game-container-max-width: #{rem(1400px)};
+  --practice-stats-max-width: #{rem(960px)};
+
+  // Leaderboard
+  --leaderboard-container-max-width: #{rem(960px)};
+  --crown-icon-height: #{rem(32px)};
+  --rank-badge-size: #{rem(28px)};
+
+  // Live Progress
+  --player-avatar-width: #{rem(28px)};
+  --player-avatar-height: #{rem(28px)};
+  --progress-bar-height: #{rem(10px)};
+  --progress-avatar-size: #{rem(22px)};
+
+  // Homepage
+  --trophy-icon-width: #{rem(56px)};
+  --features-section-max-width: #{rem(1200px)};
+  --how-it-works-max-width: #{rem(900px)};
+  --cta-section-max-width: #{rem(900px)};
+
+  // Login/Auth
+  --login-box-max-width: #{rem(420px)};
+  --password-toggle-icon-width: #{rem(8px)};
+
+  // Modal
+  --modal-box-max-width: #{rem(480px)};
+  --modal-close-btn-size: #{rem(40px)};
+  --modal-footer-min-height: #{rem(60px)};
+  --modal-btn-min-width: #{rem(80px)};
+  --modal-btn-min-height: #{rem(36px)};
+
+  // Game Lobby
+  --lobby-container-max-width: #{rem(640px)};
 }

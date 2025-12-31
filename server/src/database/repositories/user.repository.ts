@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
-import { IUser, IUserProfile, ICreateUserData } from "../../users/interfaces";
 import { User } from "../../models";
+import { ICreateUserData, IUser, IUserProfile } from "../../users/interfaces";
 
 export class UserRepository {
   constructor(private sequelize: Sequelize) {
@@ -18,6 +18,9 @@ export class UserRepository {
         "name",
         "email",
         "password",
+        "wins",
+        "gamesPlayed",
+        "bestWpm",
         "created_at",
         "updated_at",
         "created_by",
@@ -36,6 +39,9 @@ export class UserRepository {
         "id",
         "name",
         "email",
+        "gamesPlayed",
+        "wins",
+        "bestWpm",
         "created_at",
         "updated_at",
         "created_by",
@@ -52,6 +58,9 @@ export class UserRepository {
         "id",
         "name",
         "email",
+        "gamesPlayed",
+        "wins",
+        "bestWpm",
         "created_at",
         "updated_at",
         "created_by",
@@ -68,7 +77,7 @@ export class UserRepository {
       password: userData.password,
     });
 
-    // Update created_by and updated_by to user's own ID after creation
+    // set created_by and updated_by to self
     await user.update({
       created_by: user.id,
       updated_by: user.id,
@@ -83,6 +92,9 @@ export class UserRepository {
         "id",
         "name",
         "email",
+        "gamesPlayed",
+        "wins",
+        "bestWpm",
         "created_at",
         "updated_at",
         "created_by",
@@ -90,7 +102,7 @@ export class UserRepository {
       ],
       order: [["created_at", "DESC"]],
     });
-    return users.map((user) => user.toProfile());
+    return users.map(user => user.toProfile());
   }
 
   async getTotalCount(): Promise<number> {
@@ -106,15 +118,7 @@ export class UserRepository {
     });
 
     const updatedUser = await User.findByPk(userId, {
-      attributes: [
-        "id",
-        "name",
-        "email",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-      ],
+      attributes: ["id", "name", "email", "created_at", "updated_at", "created_by", "updated_by"],
     });
 
     return updatedUser ? updatedUser.toProfile() : null;
@@ -138,6 +142,9 @@ export class UserRepository {
         "id",
         "name",
         "email",
+        "gamesPlayed",
+        "wins",
+        "bestWpm",
         "created_at",
         "updated_at",
         "created_by",
@@ -145,6 +152,56 @@ export class UserRepository {
       ],
       order: [["created_at", "DESC"]],
     });
-    return users.map((user) => user.toProfile());
+    return users.map(user => user.toProfile());
+  }
+
+  async fetchUserStats(userId: number) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      return {
+        data: {
+          wins: user.wins ?? 0,
+          gamesPlayed: user.gamesPlayed ?? 0,
+          bestWpm: user.bestWpm ?? 0,
+        },
+      };
+    } else {
+      return {
+        data: {
+          wins: 0,
+          gamesPlayed: 0,
+          bestWpm: 0,
+        },
+      };
+    }
+  }
+
+  async updateUserStats(
+    userId: number,
+    stats: {
+      wins: number;
+      gamesPlayed: number;
+      bestWpm: number;
+    },
+  ) {
+    const userDetails = await this.findById(userId);
+
+    if (!userDetails) {
+      throw new Error("User not found");
+    }
+
+    const updatedBestWpm =
+      stats.bestWpm > (userDetails.bestWpm ?? 0) ? stats.bestWpm : userDetails.bestWpm;
+
+    await User.update(
+      {
+        wins: (userDetails.wins ?? 0) + stats.wins,
+        gamesPlayed: (userDetails.gamesPlayed ?? 0) + stats.gamesPlayed,
+        bestWpm: updatedBestWpm,
+      },
+      {
+        where: { id: userId },
+      },
+    );
   }
 }

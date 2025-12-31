@@ -2,18 +2,12 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { ErrorKey } from "./constants/error-messages";
 
 export class ErrorHandler {
-  private static readonly errorMap = new Map<
-    string,
-    { status: number; message: string }
-  >([
+  private static readonly errorMap = new Map<string, { status: number; message: string }>([
     [
       ErrorKey.INVALID_CREDENTIALS,
       { status: HttpStatus.UNAUTHORIZED, message: "Invalid email or password" },
     ],
-    [
-      ErrorKey.EMAIL_EXISTS,
-      { status: HttpStatus.CONFLICT, message: "Email already exists" },
-    ],
+    [ErrorKey.EMAIL_EXISTS, { status: HttpStatus.CONFLICT, message: "Email already exists" }],
     [
       ErrorKey.VALIDATION_ERROR,
       {
@@ -28,25 +22,19 @@ export class ErrorHandler {
         message: "Invalid input format",
       },
     ],
-    [
-      ErrorKey.TOKEN_EXPIRED,
-      { status: HttpStatus.UNAUTHORIZED, message: "Token expired" },
-    ],
-    [
-      ErrorKey.INVALID_TOKEN,
-      { status: HttpStatus.UNAUTHORIZED, message: "Invalid token" },
-    ],
+    [ErrorKey.TOKEN_EXPIRED, { status: HttpStatus.UNAUTHORIZED, message: "Token expired" }],
+    [ErrorKey.INVALID_TOKEN, { status: HttpStatus.UNAUTHORIZED, message: "Invalid token" }],
   ]);
 
   static handleError(
-    error: any,
+    error: Error | HttpException | unknown,
     defaultMessage: string = "Operation failed",
   ): never {
     if (error instanceof HttpException) {
       throw error;
     }
 
-    const errorMessage = error.message?.toLowerCase() || "";
+    const errorMessage = (error as Error)?.message?.toLowerCase() || "";
 
     for (const [key, config] of this.errorMap) {
       if (errorMessage.includes(key)) {
@@ -54,11 +42,8 @@ export class ErrorHandler {
       }
     }
 
-    // Additional check for legacy or variations not yet in the enum
-    if (
-      errorMessage.includes("duplicate email") ||
-      errorMessage.includes("email already in use")
-    ) {
+    // catch edge cases for duplicate emails
+    if (errorMessage.includes("duplicate email") || errorMessage.includes("email already in use")) {
       throw new HttpException("Email already exists", HttpStatus.CONFLICT);
     }
 

@@ -1,5 +1,7 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
+
+import { AUTH_CHECK_TIMEOUT } from '../../constants';
 import { AuthService } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = async (route, state) => {
@@ -12,7 +14,7 @@ export const authGuard: CanActivateFn = async (route, state) => {
     const isAuthenticated = await Promise.race([
       authService.waitForAuthCheck(),
       new Promise<boolean>((_, reject) =>
-        setTimeout(() => reject(new Error('Auth check timeout')), 3000),
+        setTimeout(() => reject(new Error('Auth check timeout')), AUTH_CHECK_TIMEOUT),
       ),
     ]);
 
@@ -30,11 +32,10 @@ export const authGuard: CanActivateFn = async (route, state) => {
       if (!isAuthenticated) {
         return true;
       }
-      router.navigate(['/homepage']);
       return false;
     }
-  } catch (error) {
-    // Handle timeout or other errors
+  } catch {
+    // something went wrong
     if (requiresAuth) {
       router.navigate(['/login'], {
         queryParams: { returnUrl: state.url },

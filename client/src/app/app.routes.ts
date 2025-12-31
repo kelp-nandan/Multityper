@@ -1,33 +1,50 @@
 import { Routes } from '@angular/router';
-import {Login} from './identity/login/login';
-import {Homepage} from './homepage/homepage';
+
+import { LeaderBoard } from './game/leaderboard/leaderboard';
+import { HomePage } from './homepage/homepage';
 import { authGuard } from './identity/guards/auth.guard';
+import { leaderboardGuard } from './identity/guards/leaderboard.guard';
+import { Login } from './identity/login/login';
 
 export const routes: Routes = [
   {
-    path:'',
-    component: Login
+    path: '',
+    component: Login,
   },
   {
-    path:'login',
+    path: 'login',
     canActivate: [authGuard],
     component: Login,
-    data: { requiresAuth: false}
+    data: { requiresAuth: false },
   },
-  { 
+  {
     path: 'homepage',
     canActivate: [authGuard],
-    component: Homepage,
-    data: { requiresAuth: true}
+    component: HomePage,
+    data: { requiresAuth: true },
   },
   {
-    path: 'participants',
+    path: 'rooms/:_id',
     canActivate: [authGuard],
-    loadComponent: () => import('./gamelobby/gamelobby').then(c => c.Gamelobby),
-    data: { requiresAuth: true}
+    loadComponent: () => import('./game/gamelobby/gamelobby').then((c) => c.GameLobby),
+    data: { requiresAuth: true },
   },
   {
-    path:'**', 
-    redirectTo:''
-  }
+    path: 'game-dashboard/:_id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./game/game-dashboard/game-dashboard').then((c) => c.GameDashboard),
+    data: { requiresAuth: true },
+  },
+  {
+    path: 'leaderboard',
+    canActivate: [leaderboardGuard],
+    component: LeaderBoard,
+    data: { requiresAuth: true },
+  },
+  {
+    path: '**',
+
+    redirectTo: '',
+  },
 ];

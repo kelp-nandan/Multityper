@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { IAuthResponse } from '../../interfaces/auth.interfaces';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule, HttpClientModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
@@ -17,16 +15,16 @@ export class Login {
   isLoading = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
+  passwordStrength = signal(0);
 
   loginForm: FormGroup;
   registerForm: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router,
-    private authService: AuthService,
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
@@ -39,12 +37,12 @@ export class Login {
     });
   }
 
-  toggleMode() {
+  toggleMode(): void {
     this.isLoginMode.set(!this.isLoginMode());
     this.clearMessages();
   }
 
-  onLogin() {
+  onLogin(): void {
     if (this.loginForm.valid) {
       this.isLoading.set(true);
       this.clearMessages();
@@ -71,7 +69,7 @@ export class Login {
     }
   }
 
-  onRegister() {
+  onRegister(): void {
     if (this.registerForm.valid) {
       this.isLoading.set(true);
       this.clearMessages();
@@ -93,7 +91,7 @@ export class Login {
     }
   }
 
-  private clearMessages() {
+  private clearMessages(): void {
     this.errorMessage.set('');
     this.successMessage.set('');
   }
@@ -111,5 +109,18 @@ export class Login {
 
   private getErrorMessage(error: { status?: number; error?: { message?: string } }): string {
     return error.error?.message || 'Please try again';
+  }
+
+  updatePasswordStrength(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const password = input.value;
+    let strength = 0;
+
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+
+    this.passwordStrength.set(Math.min(strength, 4));
   }
 }

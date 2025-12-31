@@ -1,0 +1,51 @@
+<div class="leaderboard-page">
+  <div class="bg-svg-container">
+    <img src="asset/game-dashboard.svg" alt="Background" class="bg-svg-image" />
+  </div>
+
+  <div class="leaderboard-content">
+    <div class="leaderboard-table-container">
+      <h3 class="table-title">Let's See Who's Ahead</h3>
+
+      <div class="table-wrapper">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>RANK</th>
+              <th>PLAYER</th>
+              <th>WPM</th>
+              <th>ACCURACY</th>
+              <th>WRONG</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (player of players; track $index) {
+              <tr [class.winner-row]="$index === 0">
+                <td class="rank-cell">
+                  @if ($index === 0) {
+                    <span class="rank-badge gold">🥇</span>
+                  } @else {
+                    <span class="rank-number">{{ $index + 1 }}</span>
+                  }
+                </td>
+                <td class="player-cell">
+                  <span class="player-avatar-small">{{
+                    player.username.charAt(0).toUpperCase()
+                  }}</span>
+                  <span class="player-name">{{ player.username }}</span>
+                </td>
+                <td>{{ player.wpm }}</td>
+                <td>{{ player.accuracy }}%</td>
+                <td>{{ player.totalWrong }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-secondary" (click)="goHome()">Return Home</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,10 @@
-export interface IRoom{
-  roomName: string,
-  roomId: string,
-  players: [
-    {
-      userId: number,
-      userName: string,
-      isCreated: boolean
-    }
-  ],
-  gameStarted: boolean
+import { IPlayerData } from './socket.interfaces';
+
+export interface IRoom {
+  key: string;
+  data: {
+    roomName: string;
+    players: IPlayerData[];
+    gameStarted: boolean;
+  };
 }

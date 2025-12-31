@@ -1,11 +1,14 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { IUser, ICreateUserData, IUserProfile } from "../users/interfaces";
+import { ICreateUserData, IUser, IUserProfile } from "../users/interfaces";
 
 export class User extends Model<IUser, ICreateUserData> implements IUser {
   declare id: number;
   declare name: string;
   declare email: string;
   declare password: string;
+  declare wins: number;
+  declare gamesPlayed: number;
+  declare bestWpm: number;
   declare created_at: Date;
   declare updated_at: Date;
   declare created_by: number;
@@ -16,6 +19,9 @@ export class User extends Model<IUser, ICreateUserData> implements IUser {
       id: this.id,
       name: this.name,
       email: this.email,
+      gamesPlayed: this.gamesPlayed,
+      wins: this.wins,
+      bestWpm: this.bestWpm,
       created_at: this.created_at,
       updated_at: this.updated_at,
       created_by: this.created_by,
@@ -54,6 +60,21 @@ export class User extends Model<IUser, ICreateUserData> implements IUser {
             notEmpty: true,
             len: [8, 255],
           },
+        },
+        wins: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        gamesPlayed: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        bestWpm: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
         },
         created_at: {
           type: DataTypes.DATE,

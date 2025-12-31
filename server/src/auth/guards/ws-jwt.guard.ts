@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from "@nestjs/jwt";
 import { Socket } from "socket.io";
 import { UserRepository } from "src/database/repositories";
+import { IJwtPayload } from "../../interfaces";
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
@@ -24,25 +25,29 @@ export class WsJwtGuard implements CanActivate {
     }
 
     const token = match[1];
-    if(!token) {
-      throw new UnauthorizedException('Authentication token not provided');
+    if (!token) {
+      throw new UnauthorizedException("Authentication token not provided");
     }
 
     try {
-      const payload = this.jwtService.verify(token, {
+      const payload = this.jwtService.verify<IJwtPayload>(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      if(!payload?.sub) {
+      if (!payload?.id) {
         throw new UnauthorizedException("Invalid token payload");
       }
-      const user = await this.userRepository.findById(payload.sub);
-      if(!user) {
-        throw new UnauthorizedException('User not found');
+      const user = await this.userRepository.findById(payload.id);
+      if (!user) {
+        throw new UnauthorizedException("User not found");
       }
 
-      client.data.user = {
-        id: payload.sub,
+      // Type cast client to add user data property
+      const authenticatedClient = client as unknown as {
+        data: { user: { id: number; email: string; name: string } };
+      };
+      authenticatedClient.data.user = {
+        id: payload.id,
         email: payload.email,
         name: payload.name,
       };

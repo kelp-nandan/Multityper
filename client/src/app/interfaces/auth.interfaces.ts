@@ -2,6 +2,9 @@ export interface IUser {
   id: number;
   name: string;
   email: string;
+  gamesPlayed: number;
+  wins: number;
+  bestWpm: number;
 }
 
 export interface IAuthResponse {
@@ -21,4 +24,13 @@ export interface IRegisterRequest {
   name: string;
   email: string;
   password: string;
+}
+
+export interface ILogoutResponse {
+  message: string;
+}
+
+export interface IUsersListResponse {
+  users: IUser[];
+  total: number;
 }

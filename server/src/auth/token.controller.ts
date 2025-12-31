@@ -1,14 +1,9 @@
-import {
-  Controller,
-  Post,
-  Req,
-  Res,
-  HttpException,
-  HttpStatus,
-} from "@nestjs/common";
-import { UsersService } from "../users/users.service";
-import { ENV } from "../config/env.config";
+import { Controller, HttpException, HttpStatus, Post, Req, Res } from "@nestjs/common";
+import type { Request, Response } from "express";
 import { ErrorHandler } from "../common/error-handler";
+import { ENV } from "../config/env.config";
+import { ACCESS_TOKEN_MAX_AGE } from "../constants";
+import { UsersService } from "../users/users.service";
 
 @Controller("api/token")
 export class TokenController {
@@ -16,27 +11,23 @@ export class TokenController {
 
   @Post("refresh")
   async refreshToken(
-    @Req() request: any,
-    @Res({ passthrough: true }) response: any,
-  ) {
-    const refreshToken = request.cookies?.refresh_token;
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ message: string }> {
+    const refreshToken = request.cookies?.refresh_token as string | undefined;
 
     if (!refreshToken) {
-      throw new HttpException(
-        "Refresh token not found",
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException("Refresh token not found", HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      const { accessToken } =
-        await this.usersService.refreshAccessToken(refreshToken);
+      const { accessToken } = await this.usersService.refreshAccessToken(refreshToken);
 
       response.cookie("access_token", accessToken, {
         httpOnly: true,
         secure: ENV.isProduction(),
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
+        maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       return {

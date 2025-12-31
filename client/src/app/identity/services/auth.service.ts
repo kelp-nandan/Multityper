@@ -1,27 +1,28 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject, signal, computed } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { Observable, Subscription, interval } from 'rxjs';
+import { PROFILE_CHECK_TIMEOUT, TOKEN_CHECK_INTERVAL } from '../../constants';
+import { IAuthResponse, IUser } from '../../interfaces/auth.interfaces';
 import { HttpService } from '../../services/http.service';
-import { IUser, IAuthResponse } from '../../interfaces/auth.interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   currentUser = signal<IUser | null>(null);
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
   private isBrowser: boolean;
   private tokenCheckSubscription?: Subscription;
 
   // Computed signal to derive authentication state
   isAuthenticated = computed(() => this.currentUser() !== null);
 
-  constructor(
-    private httpService: HttpService,
-    private router: Router,
-  ) {
+  private readonly httpService = inject(HttpService);
+  private readonly router = inject(Router);
+
+  constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
     if (this.isBrowser) {
       this.startTokenExpiryCheck();
@@ -31,27 +32,26 @@ export class AuthService {
   async waitForAuthCheck(): Promise<boolean> {
     if (!this.isBrowser) return false;
 
-    // If we already have user data, return true immediately
+    // already logged in? cool
     if (this.currentUser() !== null) {
       return true;
     }
 
-    // Check if user is authenticated with timeout
+    // check auth with timeout
     try {
       const response = (await Promise.race([
         this.httpService.getUserProfile().toPromise(),
         new Promise<IAuthResponse>((_, reject) =>
-          setTimeout(() => reject(new Error('Profile check timeout')), 2000),
+          setTimeout(() => reject(new Error('Profile check timeout')), PROFILE_CHECK_TIMEOUT),
         ),
       ])) as IAuthResponse;
 
       if (response?.data?.user) {
-        // Handle Sequelize objects by extracting dataValues if present
-        const cleanUser = (response.data.user as any)?.dataValues || response.data.user;
+        const cleanUser = response.data.user;
         this.currentUser.set(cleanUser);
         return true;
       }
-    } catch (error) {
+    } catch {
       // Clear user state on auth failure or timeout
       this.currentUser.set(null);
     }
@@ -79,9 +79,8 @@ export class AuthService {
     });
   }
 
-  setUserData(user: IUser) {
-    // Handle Sequelize objects by extracting dataValues if present
-    const cleanUser = (user as any)?.dataValues || user;
+  setUserData(user: IUser): void {
+    const cleanUser = user;
     this.currentUser.set(cleanUser);
   }
 
@@ -94,7 +93,7 @@ export class AuthService {
 
     try {
       await this.httpService.logout().toPromise();
-    } catch (error) {
+    } catch {
       // Logout failed but continue with local cleanup
     }
 
@@ -103,8 +102,8 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  private startTokenExpiryCheck() {
-    this.tokenCheckSubscription = interval(5 * 60000).subscribe(async () => {
+  private startTokenExpiryCheck(): void {
+    this.tokenCheckSubscription = interval(TOKEN_CHECK_INTERVAL).subscribe(async () => {
       if (this.isAuthenticated()) {
         const refreshed = await this.refreshToken();
         if (!refreshed) {
@@ -121,7 +120,7 @@ export class AuthService {
       const response = await this.httpService.refreshToken().toPromise();
       // If we reach here, refresh was successful (200 status)
       return true;
-    } catch (error: any) {
+    } catch {
       // Refresh failed - token expired or network error
       return false;
     }

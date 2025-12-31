@@ -1,7 +1,8 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
 import cookieParser from "cookie-parser";
+
+import { AppModule } from "./app.module";
 import { ENV } from "./config/env.config";
 
 async function bootstrap() {
@@ -22,8 +23,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(ENV.PORT);
-
-  // Server startup completed
+  await app.listen(ENV.PORT,'0.0.0.0');
 }
-bootstrap();
+void bootstrap();

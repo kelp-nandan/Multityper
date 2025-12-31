@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { AuthService } from '../identity/services/auth.service';
+import { IUser } from '../interfaces/auth.interfaces';
 import { IRoom } from '../interfaces/room.interface';
 import { Modal } from '../modal/modal';
-import { AuthService } from '../identity/services/auth.service';
+import { HttpService } from '../services/http.service';
 import { RoomService } from '../services/room.service';
 import { SocketService } from '../services/socket.service';
-import { IUser } from '../interfaces';
-
 
 @Component({
   selector: 'app-homepage',
@@ -17,19 +17,8 @@ import { IUser } from '../interfaces';
   templateUrl: './homepage.html',
   styleUrls: ['./homepage.scss'],
 })
-
-export class Homepage implements OnInit {
-
+export class HomePage implements OnInit {
   rooms$!: Observable<IRoom[]>;
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private socketService: SocketService,
-    private roomService: RoomService
-  ) {
-    this.rooms$ = this.roomService.rooms$;
-  }
 
   user = signal<IUser | null>(null);
   showDetails = signal(false);
@@ -37,80 +26,109 @@ export class Homepage implements OnInit {
   showJoinModal = signal(false);
   showCreateModal = signal(false);
   roomName = signal<string>('');
+  userStats = signal<{ bestWpm: number; gamesPlayed: number; wins: number }>({
+    bestWpm: 0,
+    gamesPlayed: 0,
+    wins: 0,
+  });
 
-  
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly socketService = inject(SocketService);
+  private readonly roomService = inject(RoomService);
+  private readonly httpService = inject(HttpService);
 
-  ngOnInit() {
+  constructor() {
+    this.rooms$ = this.roomService.rooms$;
+  }
+
+  ngOnInit(): void {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
     }
-
     const currentUser = this.authService.currentUser();
     if (currentUser) {
-      const cleanUser = (currentUser as any)?.dataValues || currentUser;
+      const cleanUser = currentUser;
       this.user.set(cleanUser);
+      this.fetchUserStats();
     } else {
       this.fetchUserProfile();
     }
   }
 
-  trackByRoomId(index: number, room: IRoom) {
-    return room.roomId;
+  fetchUserStats() {
+    this.isLoading.set(true);
+    this.httpService.getUserStats().subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.data) {
+          const currentStats = this.user();
+          if (currentStats) {
+            this.userStats.set({
+              bestWpm: response.data.bestWpm,
+              gamesPlayed: response.data.gamesPlayed,
+              wins: response.data.wins,
+            });
+          }
+        }
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Error fetching user stats:', error);
+      },
+    });
   }
 
+  trackByRoomId(index: number, room: IRoom): string {
+    return room.key;
+  }
 
-  joinRoomModal() {
+  joinRoomModal(): void {
     this.showJoinModal.set(true);
   }
 
-  createRoomModal() {
+  createRoomModal(): void {
     this.showCreateModal.set(true);
   }
 
-  handleJoinClose() {
+  handleJoinClose(): void {
     this.showJoinModal.set(false);
   }
 
-  handleCreateClose() {
+  handleCreateClose(): void {
     this.showCreateModal.set(false);
   }
 
-  handleCreateConfirm() {
+  handleCreateConfirm(): void {
     this.socketService.handleCreateRoom({ roomName: this.roomName() });
     this.showCreateModal.set(false);
     this.roomName.set('');
   }
 
-  handleJoinRoom(room: IRoom) {
-    this.roomService.selectRoom(room);
+  handleJoinRoom(room: IRoom): void {
     this.showJoinModal.set(false);
-    this.socketService.handleJoinRoom(room.roomId);
-    this.router.navigate(['/participants']);
+    this.socketService.handleJoinRoom(room.key);
   }
 
-
-  fetchUserProfile() {
+  fetchUserProfile(): void {
     this.isLoading.set(true);
     this.authService.getUserProfile().subscribe({
       next: (response) => {
         this.isLoading.set(false);
         if (response.data.user) {
-          const cleanUser = (response.data.user as any)?.dataValues || response.data.user;
+          const cleanUser = response.data.user;
           this.user.set(cleanUser);
         }
       },
-      error: (error) => {
+      error: () => {
         this.isLoading.set(false);
-        console.error('Error fetching user profile:', error);
         this.authService.logout();
-      }
+      },
     });
   }
 
-  onLogout() {
-    if (confirm('Are you sure you want to logout?'))
-      this.authService.logout();
+  onLogout(): void {
+    if (confirm('Are you sure you want to logout?')) this.authService.logout();
   }
-
 }

@@ -1,0 +1,184 @@
+// Gamelobby Styles
+
+.lobby-container {
+  min-height: 100vh;
+  padding: var(--spacing-20);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-32);
+
+  background: var(--primary-gradient);
+
+  .game-title {
+    font-size: var(--font-size-48);
+    font-weight: var(--font-weight-800);
+    color: var(--white);
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .game-quote {
+    font-size: var(--font-size-18);
+    color: var(--light-gray-text);
+    text-align: center;
+    font-style: italic;
+    margin-bottom: var(--spacing-20);
+  }
+
+  .players-container {
+    width: 100%;
+    max-width: var(--lobby-container-max-width);
+    padding: var(--spacing-20);
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+
+    background: var(--white);
+    border: var(--spacing-2) solid var(--light-border);
+    border-radius: var(--radius-12);
+    box-shadow: 0 var(--spacing-8) var(--spacing-20) var(--primary-alpha-15);
+
+    .player-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      padding: var(--spacing-12) var(--spacing-16);
+      border-radius: var(--radius-8);
+
+      background: linear-gradient(180deg, var(--white), var(--light-gray));
+      border: var(--spacing-2) solid var(--border-gray);
+      transition: var(--transition-transform);
+
+      &:hover {
+        transform: translateY(-var(--spacing-2));
+        box-shadow: 0 var(--spacing-6) var(--spacing-18) var(--primary-alpha-25);
+      }
+
+      .player-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+
+        span {
+          font-weight: var(--font-weight-600);
+          color: var(--primary-gradient-end);
+        }
+      }
+
+      .leave-room-btn {
+        background-color: var(--danger);
+        color: var(--white);
+        padding: var(--spacing-4) var(--spacing-10);
+        border-radius: var(--radius-4);
+        border: none;
+        cursor: pointer;
+      }
+    }
+
+    .players-footer {
+      margin-top: var(--spacing-16);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-12);
+
+      .button-primary {
+        background: var(--primary-gradient);
+        color: var(--white);
+        border: none;
+        padding: var(--spacing-10) var(--spacing-24);
+        border-radius: var(--radius-6);
+        font-weight: var(--font-weight-600);
+        cursor: pointer;
+        transition: var(--transition-smooth);
+
+        &:hover {
+          opacity: 0.9;
+          transform: translateY(-var(--spacing-2));
+        }
+      }
+
+      .button-secondary {
+        background-color: var(--light-border);
+        color: var(--primary-gradient-end);
+        border: none;
+        padding: var(--spacing-10) var(--spacing-24);
+        border-radius: var(--radius-6);
+        font-weight: var(--font-weight-600);
+        cursor: pointer;
+        transition: var(--transition-smooth);
+
+        &:hover {
+          background-color: var(--border-gray);
+        }
+      }
+    }
+
+    .waiting-message {
+      width: 100%;
+      padding: var(--spacing-16) var(--spacing-24);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: linear-gradient(90deg, var(--primary-alpha-08), var(--primary-end-alpha-08));
+
+      border-radius: var(--radius-8);
+      border: var(--spacing-2) solid var(--primary-gradient-start);
+
+      p {
+        margin: 0;
+        font-size: var(--font-size-16);
+        font-weight: var(--font-weight-600);
+        color: var(--primary-gradient-start);
+        text-align: center;
+        animation: pulse 2s infinite;
+      }
+    }
+  }
+}
+
+.no-room-message {
+  margin-top: var(--spacing-40);
+  text-align: center;
+  color: var(--primary-gradient-end);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 600px) {
+  .lobby-container {
+    .game-title {
+      font-size: var(--font-size-40);
+    }
+
+    .game-quote {
+      font-size: var(--font-size-16);
+    }
+
+    .players-container {
+      padding: var(--spacing-16);
+
+      .player-card {
+        padding: var(--spacing-10) var(--spacing-12);
+      }
+    }
+  }
+}

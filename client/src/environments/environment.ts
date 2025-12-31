@@ -1,4 +1,7 @@
+import { Socket } from "socket.io-client";
+
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: '/api',
+  passwordEncryptionKey: 'my-super-secret-encryption-key-32ch',
+  socketUrl: '',
 };

@@ -10,6 +10,7 @@ export class Modal {
   @Input() isOpen = false;
   @Input() title = 'Modal Title';
   @Input() showFooter = true;
+
   @Output() onClose = new EventEmitter<void>();
   @Output() onConfirmed = new EventEmitter<void>();
 
@@ -27,4 +28,3 @@ export class Modal {
     this.isOpen = true;
   }
 }
-

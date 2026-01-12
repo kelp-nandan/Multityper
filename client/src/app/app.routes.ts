@@ -13,15 +13,12 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    canActivate: [authGuard],
     component: Login,
-    data: { requiresAuth: false },
   },
   {
     path: 'homepage',
     canActivate: [authGuard],
     component: HomePage,
-    data: { requiresAuth: true },
   },
   {
     path: 'rooms/:_id',

@@ -13,6 +13,8 @@ export class User extends Model<IUser, ICreateUserData> implements IUser {
   declare updated_at: Date;
   declare created_by: number;
   declare updated_by: number;
+  declare azureOid: string;
+  declare azureTenantId: string;
 
   toProfile(): IUserProfile {
     return {
@@ -55,9 +57,8 @@ export class User extends Model<IUser, ICreateUserData> implements IUser {
         },
         password: {
           type: DataTypes.STRING,
-          allowNull: false,
+          allowNull: true,
           validate: {
-            notEmpty: true,
             len: [8, 255],
           },
         },
@@ -75,6 +76,16 @@ export class User extends Model<IUser, ICreateUserData> implements IUser {
           type: DataTypes.INTEGER,
           allowNull: false,
           defaultValue: 0,
+        },
+        azureOid: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "azure_oid",
+        },
+        azureTenantId: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "azure_tenant_id",
         },
         created_at: {
           type: DataTypes.DATE,

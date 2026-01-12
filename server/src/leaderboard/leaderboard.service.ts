@@ -3,7 +3,7 @@ import { UserRepository } from "src/database/repositories/user.repository";
 
 @Injectable()
 export class LeaderboardService {
-  constructor(private userRepository: UserRepository) { }
+  constructor(private userRepository: UserRepository) {}
 
   async updateStats(
     userId: number,
@@ -28,7 +28,19 @@ export class LeaderboardService {
     });
   }
 
-  async fetchStats(userId: number) {
+  async fetchStats(
+    userId: number,
+  ): Promise<{
+    message: string;
+    data: {
+      id: number;
+      name: string;
+      email: string;
+      wins: number;
+      gamesPlayed: number;
+      bestWpm: number;
+    };
+  }> {
     return this.userRepository.fetchUserStats(userId);
   }
 }

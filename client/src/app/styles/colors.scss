@@ -83,7 +83,9 @@
   --gray-alpha-12: #2425261f;
 
   // Gradients
-  --primary-gradient: linear-gradient(135deg,
-      var(--primary-gradient-start) 0%,
-      var(--primary-gradient-end) 100%);
+  --primary-gradient: linear-gradient(
+    135deg,
+    var(--primary-gradient-start) 0%,
+    var(--primary-gradient-end) 100%
+  );
 }

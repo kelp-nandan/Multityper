@@ -138,24 +138,21 @@ export class SocketService {
   ): void {
     this.socket.emit('live-progress', { progress: percentage, wpm, accuracy, roomId });
   }
-  // Expose socket.on method for components with generic typing
+
   on<T = unknown>(event: string, callback: (data: T) => void): void {
     this.socket.on(event, (data: T) => {
       this.ngZone.run(() => callback(data));
     });
   }
 
-  // Expose socket.off method for components
   off(event: string, callback?: (data: unknown) => void): void {
     this.socket.off(event, callback);
   }
 
-  // General emit method for components with optional generic typing
   emit<T = unknown>(event: string, data?: T): void {
     this.socket.emit(event, data);
   }
 
-  // Observable-based listen method
   listen<T = unknown>(event: string) {
     return new Observable<T>((observer) => {
       this.socket.on(event, (data: T) => {

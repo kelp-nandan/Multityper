@@ -38,12 +38,12 @@ export class GameLobby implements OnInit, OnDestroy {
       this.router.navigate(['/homepage']);
       return;
     }
-    
-    const currentRoom = this.roomService.getCurrentRoom();    
+
+    const currentRoom = this.roomService.getCurrentRoom();
     if (!currentRoom || currentRoom.key !== roomId) {
       this.socketService.handleRestoreRoom(roomId);
     }
-    
+
     this.room$ = this.roomService.selectedRoom$;
   }
 
@@ -52,7 +52,7 @@ export class GameLobby implements OnInit, OnDestroy {
     const createdBy = room.data.players?.find(
       (p: { isCreated: boolean; userId: number }) => p.isCreated,
     );
-    
+
     return createdBy?.userId === currentUser?.id;
   }
 
@@ -75,9 +75,6 @@ export class GameLobby implements OnInit, OnDestroy {
   }
 
   leaveBtnValidation(player: { userId: number; userName: string; isCreated: boolean }): boolean {
-    return (
-      !player.isCreated &&
-      player.userId === this.currentUser?.id
-    );
+    return !player.isCreated && player.userId === this.currentUser?.id;
   }
 }

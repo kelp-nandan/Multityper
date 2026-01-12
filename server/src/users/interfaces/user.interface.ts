@@ -10,6 +10,8 @@ export interface IUser {
   updated_at: Date;
   created_by: number;
   updated_by: number;
+  azureOid?: string;
+  azureTenantId?: string;
 }
 
 export interface IUserProfile {
@@ -28,5 +30,14 @@ export interface IUserProfile {
 export interface ICreateUserData {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  azureOid?: string;
+  azureTenantId?: string;
+}
+
+export interface IcreateAzureUserDto {
+  email: string;
+  name: string;
+  azureOid: string;
+  azureTenantId: string;
 }

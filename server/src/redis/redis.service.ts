@@ -1,68 +1,127 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { createClient, RedisClientType } from "redis";
-import { IFetchRooms, IRoomData } from "src/interfaces/rooms.interface";
+import { Injectable, OnModuleDestroy } from "@nestjs/common";
+import Redis from "ioredis";
+import { REDIS } from "../constants/redis";
+import { IRoomData, IUserSession } from "../interfaces/common.interface";
 
 @Injectable()
-export class RedisService implements OnModuleInit {
-  private readonly logger = new Logger(RedisService.name);
-  private redisClient: RedisClientType;
+export class RedisService implements OnModuleDestroy {
+  private redisClient: Redis;
 
-  async onModuleInit(): Promise<void> {
-    this.redisClient = createClient({
-      url: `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST || "localhost"}:${process.env.REDIS_PORT || 6379}`,
+  constructor() {
+    this.redisClient = new Redis({
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379", 10),
+      password: process.env.REDIS_PASSWORD || undefined,
+      db: parseInt(process.env.REDIS_DB || "0", 10),
+      retryStrategy: (times: number) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
     });
 
     this.redisClient.on("error", err => {
-      this.logger.error("Redis Client Error:", err);
+      console.error("Redis connection error:", err);
     });
-
-    await this.redisClient.connect();
   }
 
-  async onModuleDestroy(): Promise<void> {
-    await this.redisClient.quit();
+  getClient(): Redis {
+    return this.redisClient;
   }
 
-  async setRoom(room: IFetchRooms): Promise<void> {
-    await this.redisClient.set(room.key, JSON.stringify(room.data));
+  async get(key: string): Promise<string | null> {
+    return await this.redisClient.get(key);
   }
 
-  async getRoom(id: string): Promise<IRoomData | null> {
-    const data = await this.redisClient.get(id);
-    return data ? (JSON.parse(data) as IRoomData) : null;
+  async set(key: string, value: string, ttl?: number): Promise<void> {
+    if (ttl) {
+      await this.redisClient.set(key, value, "EX", ttl);
+    } else {
+      await this.redisClient.set(key, value);
+    }
   }
 
-  async deleteRoom(id: string): Promise<void> {
-    await this.redisClient.del(id);
+  async delete(key: string): Promise<void> {
+    await this.redisClient.del(key);
   }
 
-  async getAllRooms(): Promise<IFetchRooms[]> {
-    const rooms: IFetchRooms[] = [];
-    let cursor = "0";
+  async blacklistToken(
+    token: string,
+    tokenType: "access" | "refresh" | "uti",
+    ttl: number = REDIS.TOKEN_BLACKLIST_TTL,
+  ): Promise<void> {
+    const key = this.getBlacklistKey(token, tokenType);
+    await this.set(key, "blacklisted", ttl);
+  }
 
-    do {
-      const reply = await this.redisClient.scan(cursor, {
-        MATCH: "*",
-        COUNT: 100,
-      });
+  async isTokenBlacklisted(
+    token: string,
+    tokenType: "access" | "refresh" | "uti",
+  ): Promise<boolean> {
+    const key = this.getBlacklistKey(token, tokenType);
+    const result = await this.get(key);
+    return result !== null;
+  }
 
-      cursor = reply.cursor;
-      const keys = reply.keys;
+  async removeFromBlacklist(token: string, tokenType: "access" | "refresh" | "uti"): Promise<void> {
+    const key = this.getBlacklistKey(token, tokenType);
+    await this.delete(key);
+  }
 
-      if (keys.length > 0) {
-        const values = await this.redisClient.mGet(keys);
+  private getBlacklistKey(token: string, tokenType: "access" | "refresh" | "uti"): string {
+    return `${REDIS.BLACKLIST_PREFIX}:${tokenType}:${token}`;
+  }
 
-        values.forEach((value, index) => {
-          if (value) {
-            const roomData = JSON.parse(value) as IRoomData;
-            rooms.push({
-              key: keys[index],
-              data: roomData,
-            });
+  async storeUserSession(userId: number, sessionData: IUserSession, ttl?: number): Promise<void> {
+    const key = `${REDIS.USER_SESSION_PREFIX}:${userId}`;
+    await this.set(key, JSON.stringify(sessionData), ttl);
+  }
+
+  async getUserSession(userId: number): Promise<IUserSession | null> {
+    const key = `${REDIS.USER_SESSION_PREFIX}:${userId}`;
+    const data = await this.get(key);
+    return data ? JSON.parse(data) : null;
+  }
+
+  async deleteUserSession(userId: number): Promise<void> {
+    const key = `${REDIS.USER_SESSION_PREFIX}:${userId}`;
+    await this.delete(key);
+  }
+
+  async setRoom({ key, data }: { key: string; data: IRoomData }): Promise<void> {
+    await this.set(key, JSON.stringify(data));
+  }
+
+  async getRoom(roomId: string): Promise<IRoomData | null> {
+    const data = await this.get(roomId);
+    return data ? JSON.parse(data) : null;
+  }
+
+  async deleteRoom(roomId: string): Promise<void> {
+    await this.delete(roomId);
+  }
+
+  async getAllRooms(): Promise<IRoomData[]> {
+    const keys = await this.redisClient.keys("*");
+    const rooms: IRoomData[] = [];
+
+    for (const key of keys) {
+      const data = await this.get(key);
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.roomId) {
+            rooms.push(parsed);
           }
-        });
+        } catch (e) {
+          // Skip non-room keys
+        }
       }
-    } while (cursor !== "0");
+    }
+
     return rooms;
+  }
+
+  onModuleDestroy(): void {
+    this.redisClient.disconnect();
   }
 }

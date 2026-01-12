@@ -7,9 +7,6 @@ export class UserRepository {
     User.initModel(this.sequelize);
   }
 
-  /**
-   * Find user by email for authentication purposes only.
-   */
   async findByEmailForAuth(email: string): Promise<IUser | null> {
     return await User.findOne({
       where: { email },
@@ -29,9 +26,6 @@ export class UserRepository {
     });
   }
 
-  /**
-   * Find user by email for general purposes.
-   */
   async findByEmail(email: string): Promise<IUserProfile | null> {
     const user = await User.findOne({
       where: { email },
@@ -74,10 +68,11 @@ export class UserRepository {
     const user = await User.create({
       name: userData.name,
       email: userData.email,
-      password: userData.password,
+      password: userData.password || "",
+      azureOid: userData.azureOid,
+      azureTenantId: userData.azureTenantId,
     });
 
-    // set created_by and updated_by to self
     await user.update({
       created_by: user.id,
       updated_by: user.id,
@@ -155,7 +150,9 @@ export class UserRepository {
     return users.map(user => user.toProfile());
   }
 
-  async fetchUserStats(userId: number) {
+  async fetchUserStats(
+    userId: number,
+  ): Promise<{ data: { wins: number; gamesPlayed: number; bestWpm: number }; message?: string }> {
     const user = await User.findByPk(userId);
     if (user) {
       return {

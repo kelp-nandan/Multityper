@@ -6,14 +6,14 @@ import { UserRepository } from "../database/repositories";
 import { IJwtPayload, IRefreshTokenPayload } from "../interfaces/auth.interface";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
-import { IUserProfile } from "./interfaces";
+import { IcreateAzureUserDto, IUser, IUserProfile } from "./interfaces";
 
 @Injectable()
 export class UsersService {
   constructor(
     private jwtService: JwtService,
     private userRepository: UserRepository,
-  ) { }
+  ) {}
 
   async register(createUserDto: CreateUserDto): Promise<IUserProfile> {
     const { name, email, password } = createUserDto;
@@ -24,10 +24,8 @@ export class UsersService {
     }
 
     const saltRounds = 12;
-    // hash password on server too
     const serverHash = await bcrypt.hash(password, saltRounds);
 
-    // save new user
     const newUser = await this.userRepository.create({
       name,
       email,
@@ -43,13 +41,11 @@ export class UsersService {
   }> {
     const { email, password } = LoginUserDto;
 
-    // Find user for authentication
     const user = await this.userRepository.findByEmailForAuth(email);
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // Verify password matches stored hash
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -64,19 +60,20 @@ export class UsersService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
     const refreshToken = this.generateRefreshToken(user.id);
 
-    // Return clean user object without password
     const userProfile: IUserProfile = {
       id: user.id,
       name: user.name,
       email: user.email,
-      wins: user.wins,
-      gamesPlayed: user.gamesPlayed,
-      bestWpm: user.bestWpm,
+      wins: user.wins ?? 0,
+      gamesPlayed: user.gamesPlayed ?? 0,
+      bestWpm: user.bestWpm ?? 0,
       created_at: user.created_at,
       updated_at: user.updated_at,
       created_by: user.created_by,
       updated_by: user.updated_by,
     };
+
+    delete (userProfile as any).password;
 
     return {
       user: userProfile,
@@ -86,7 +83,6 @@ export class UsersService {
   }
 
   private generateRefreshToken(userId: number): string {
-    // Generate stateless refresh token with longer expiry
     const refreshPayload: IRefreshTokenPayload = {
       id: userId,
     };
@@ -95,16 +91,13 @@ export class UsersService {
 
   async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
-      // Verify the refresh token JWT
       const decoded = this.jwtService.verify<IRefreshTokenPayload>(refreshToken);
 
-      // make sure user still exists
       const user = await this.userRepository.findById(decoded.id);
       if (!user) {
         throw new UnauthorizedException("User not found");
       }
 
-      // Generate new access token with fresh user data
       const payload: IJwtPayload = {
         email: user.email,
         id: user.id,
@@ -116,6 +109,10 @@ export class UsersService {
     } catch (_error) {
       throw new UnauthorizedException("Invalid or expired refresh token");
     }
+  }
+
+  async findById(userId: number): Promise<IUserProfile | null> {
+    return await this.userRepository.findById(userId);
   }
 
   async findAll(): Promise<IUserProfile[]> {
@@ -133,8 +130,7 @@ export class UsersService {
 
     const payload = {
       email: user.email,
-      sub: user.id,
-      userId: user.id,
+      id: user.id,
       name: user.name,
     };
 
@@ -142,5 +138,19 @@ export class UsersService {
     const refreshToken = this.generateRefreshToken(user.id);
 
     return { accessToken, refreshToken };
+  }
+
+  async findByEmail(email: string): Promise<IUser | null> {
+    return await this.userRepository.findByEmailForAuth(email);
+  }
+
+  async createAzureUser(dto: IcreateAzureUserDto): Promise<IUserProfile> {
+    return await this.userRepository.create({
+      email: dto.email,
+      name: dto.name,
+      password: "",
+      azureOid: dto.azureOid,
+      azureTenantId: dto.azureTenantId,
+    });
   }
 }

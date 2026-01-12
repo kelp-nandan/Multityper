@@ -17,7 +17,6 @@
   &.show {
     opacity: 1;
     visibility: visible;
-
   }
 
   .modal-box {
@@ -97,9 +96,11 @@
         text-align: center;
 
         &.modal-primary {
-          background: linear-gradient(90deg,
-              var(--primary-gradient-start),
-              var(--primary-gradient-end));
+          background: linear-gradient(
+            90deg,
+            var(--primary-gradient-start),
+            var(--primary-gradient-end)
+          );
           color: var(--white);
           font-weight: var(--font-weight-600);
           border: var(--spacing-2) solid transparent;

@@ -26,10 +26,6 @@ export class HttpService {
     return this.http.post<IAuthResponse>(API_ENDPOINTS.AUTH.REGISTER, registerData);
   }
 
-  getUserProfile(): Observable<IAuthResponse> {
-    return this.http.get<IAuthResponse>(API_ENDPOINTS.USERS.PROFILE);
-  }
-
   logout(): Observable<ILogoutResponse> {
     return this.http.post<ILogoutResponse>(API_ENDPOINTS.AUTH.LOGOUT, {});
   }
@@ -44,5 +40,13 @@ export class HttpService {
 
   getUserStats(): Observable<{ data: IFetchStats }> {
     return this.http.get<{ data: IFetchStats }>(API_ENDPOINTS.LEADERBOARD.STATS);
+  }
+
+  blacklistAzureToken(): Observable<void> {
+    return this.http.post<void>(API_ENDPOINTS.AUTH.BLACKLIST_AZURE_TOKEN, {});
+  }
+
+  getUserProfile(): Observable<IAuthResponse> {
+    return this.http.get<IAuthResponse>(API_ENDPOINTS.AUTH.PROFILE);
   }
 }

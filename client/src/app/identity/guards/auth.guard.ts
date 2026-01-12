@@ -1,48 +1,55 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-
-import { AUTH_CHECK_TIMEOUT } from '../../constants';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
+import { AppConfigService } from '../../config/app-config.service';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = async (route, state) => {
+export const authGuard: CanActivateFn = (route, state): boolean | UrlTree => {
   const authService = inject(AuthService);
+  const appConfig = inject(AppConfigService);
+  const msalService = inject(MsalService);
   const router = inject(Router);
 
-  const requiresAuth = route.data?.['requiresAuth'] !== false; // Default to true
+  if (appConfig.isLocalAuth()) {
+    if (authService.isAuthenticated()) {
+      return true;
+    }
 
-  try {
-    const isAuthenticated = await Promise.race([
-      authService.waitForAuthCheck(),
-      new Promise<boolean>((_, reject) =>
-        setTimeout(() => reject(new Error('Auth check timeout')), AUTH_CHECK_TIMEOUT),
-      ),
-    ]);
+    return router.createUrlTree(['/login'], {
+      queryParams: { returnUrl: state.url },
+    });
+  } else {
+    const account = msalService.instance.getActiveAccount();
+    const allAccounts = msalService.instance.getAllAccounts();
 
-    if (requiresAuth) {
-      // Protected route - requires authentication
-      if (isAuthenticated) {
-        return true;
+    if (!account && allAccounts.length === 0) {
+      const currentUrl = state.url;
+
+      if (
+        currentUrl === '/login' ||
+        currentUrl.includes('code=') ||
+        currentUrl.includes('state=')
+      ) {
+        return false;
       }
-      router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url },
+
+      msalService.loginRedirect({
+        scopes: ['user.read'],
+        state: state.url,
       });
       return false;
-    } else {
-      // Guest route - requires NO authentication
-      if (!isAuthenticated) {
-        return true;
-      }
-      return false;
     }
-  } catch {
-    // something went wrong
-    if (requiresAuth) {
-      router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url },
+
+    if (!account && allAccounts.length > 0) {
+      msalService.instance.setActiveAccount(allAccounts[0]);
+    }
+
+    if (!authService.isAuthenticated() && msalService.instance.getActiveAccount()) {
+      authService.setUserProfile().catch((err) => {
+        console.error('Failed to load user profile in background:', err);
       });
-      return false;
-    } else {
-      return true; // Allow guest access on auth check failure
     }
+
+    return true;
   }
 };

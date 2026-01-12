@@ -12,6 +12,7 @@ import {
 import { Server, Socket } from "socket.io";
 import { v4 as uuid4 } from "uuid";
 
+import { UserRepository } from "src/database/repositories";
 import { WsJwtGuard } from "../auth/guards/ws-jwt.guard";
 import { wsConfig } from "../config/wsConfig";
 import { MAX_PROGRESS, MIN_PROGRESS, REDIRECT_DELAY } from "../constants";
@@ -19,7 +20,6 @@ import { IPlayerStatsResponse } from "../interfaces";
 import { IPlayer } from "../interfaces/rooms.interface";
 import { ParagraphService } from "../paragraph/paragraph.service";
 import { RedisService } from "../redis/redis.service";
-import { UserRepository } from "src/database/repositories";
 
 interface IAuthenticatedSocket extends Socket {
   data: {
@@ -40,7 +40,7 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     private redisService: RedisService,
     private paragraphService: ParagraphService,
     private userRepository: UserRepository,
-  ) { }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -144,7 +144,10 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("get-game-state")
-  async handleGameState(@MessageBody() roomId: string, @ConnectedSocket() client: IAuthenticatedSocket) {
+  async handleGameState(
+    @MessageBody() roomId: string,
+    @ConnectedSocket() client: IAuthenticatedSocket,
+  ) {
     const roomData = await this.redisService.getRoom(roomId);
     if (!roomData) {
       client.emit("join-room-error", {
@@ -419,7 +422,6 @@ export class RoomGateWay implements OnGatewayConnection, OnGatewayDisconnect {
         data: roomData,
       });
     } catch (error) {
-      // Error handling can be added here if needed
       this.logger.error("Error handling live progress", error);
     }
   }

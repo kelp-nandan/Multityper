@@ -222,6 +222,18 @@
         color: var(--text-light);
       }
     }
+
+    // Field error message
+    .field-error {
+      color: var(--error);
+      font-size: var(--font-size-11);
+      margin-top: var(--spacing-4);
+      display: block;
+
+      @media (max-width: 480px) {
+        font-size: var(--font-size-10);
+      }
+    }
   }
 
   // PASSWORD INPUT & STRENGTH
@@ -374,6 +386,85 @@
       color: var(--error-text);
     }
   }
+
+  // AZURE LOGIN SECTION
+
+  .azure-login {
+    text-align: center;
+    padding: var(--spacing-32) 0;
+
+    @media (max-width: 768px) {
+      padding: var(--spacing-24) 0;
+    }
+
+    .azure-description {
+      font-size: var(--font-size-14);
+      color: var(--text-lighter);
+      margin-bottom: var(--spacing-24);
+
+      @media (max-width: 768px) {
+        font-size: var(--font-size-13);
+        margin-bottom: var(--spacing-20);
+      }
+
+      @media (max-width: 480px) {
+        font-size: var(--font-size-12);
+        margin-bottom: var(--spacing-16);
+      }
+    }
+
+    .btn-microsoft {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-12);
+      padding: var(--spacing-14) var(--spacing-32);
+      border-radius: var(--radius-12);
+      border: var(--border-thin) solid var(--border-gray);
+      background: var(--white);
+      font-size: var(--font-size-16);
+      font-weight: var(--font-weight-600);
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 var(--shadow-blur-4) var(--shadow-blur-8) var(--black-alpha-10);
+
+      @media (max-width: 768px) {
+        padding: var(--spacing-12) var(--spacing-24);
+        font-size: var(--font-size-15);
+        gap: var(--spacing-10);
+      }
+
+      @media (max-width: 480px) {
+        padding: var(--spacing-10) var(--spacing-20);
+        font-size: var(--font-size-14);
+        gap: var(--spacing-8);
+        border-radius: var(--radius-10);
+      }
+
+      .microsoft-icon {
+        width: var(--icon-md);
+        height: var(--icon-md);
+
+        @media (max-width: 480px) {
+          width: var(--icon-sm);
+          height: var(--icon-sm);
+        }
+      }
+
+      &:hover:not(:disabled) {
+        background: var(--bg-very-light);
+        border-color: var(--primary-gradient-start);
+        box-shadow: 0 var(--shadow-blur-8) var(--shadow-blur-16) var(--primary-alpha-15);
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
 }
 
 // KEYFRAME ANIMATIONS
@@ -401,7 +492,6 @@
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0);

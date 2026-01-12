@@ -13,6 +13,7 @@ import { SocketService } from '../services/socket.service';
 
 @Component({
   selector: 'app-homepage',
+  standalone: true,
   imports: [CommonModule, FormsModule, Modal],
   templateUrl: './homepage.html',
   styleUrls: ['./homepage.scss'],
@@ -43,21 +44,19 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    // Guard already validated authentication, so user should be set
     const currentUser = this.authService.currentUser();
     if (currentUser) {
       const cleanUser = currentUser;
       this.user.set(cleanUser);
       this.fetchUserStats();
     } else {
+      //fallback
       this.fetchUserProfile();
     }
   }
 
-  fetchUserStats() {
+  fetchUserStats(): void {
     this.isLoading.set(true);
     this.httpService.getUserStats().subscribe({
       next: (response) => {

@@ -1,32 +1,33 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { JWT_ACCESS_TOKEN_EXPIRY } from "../constants";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { ConfigModule } from "../config/config.module";
+import { User } from "../models/user.model";
+import { RedisModule } from "../redis/redis.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
-import { JwtStrategy } from "./strategy/jwt.strategy";
+import { AzureAdGuard } from "./guards/azure-ad.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { LocalJwtGuard } from "./guards/local-jwt.guard";
+import { AzureADStrategy } from "./strategy/azure-ad.strategy";
+import { LocalJwtStrategy } from "./strategy/jwt.strategy";
 import { TokenController } from "./token.controller";
 
 @Module({
   imports: [
-    UsersModule,
     PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => {
-        return {
-          secret: configService.get<string>("jwt.secret"),
-          signOptions: {
-            expiresIn: JWT_ACCESS_TOKEN_EXPIRY,
-          },
-        };
-      },
-      inject: [ConfigService],
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || "secret-key",
+      signOptions: { expiresIn: "15m" },
     }),
+    SequelizeModule.forFeature([User]),
+    UsersModule,
+    RedisModule,
+    ConfigModule,
   ],
   controllers: [AuthController, TokenController],
-  providers: [JwtStrategy],
-  exports: [JwtModule],
+  providers: [LocalJwtStrategy, AzureADStrategy, JwtAuthGuard, LocalJwtGuard, AzureAdGuard],
+  exports: [JwtModule, JwtAuthGuard, LocalJwtGuard, AzureAdGuard],
 })
-export class AuthModule { }
+export class AuthModule {}

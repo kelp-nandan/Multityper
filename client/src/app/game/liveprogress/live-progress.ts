@@ -33,6 +33,4 @@ export class LiveProgress implements OnInit {
       }
     });
   }
-
-  
 }

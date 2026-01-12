@@ -10,7 +10,7 @@ const databaseConfig: { [key: string]: SequelizeModuleOptions } = {
         password: ENV.DATABASE_PASSWORD,
         database: ENV.DB_NAME,
         autoLoadModels: true,
-        synchronize: false, // table creates in migration only
+        synchronize: false, 
     },
 };
 

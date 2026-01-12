@@ -28,69 +28,116 @@
       <div class="alert error">{{ errorMessage() }}</div>
     }
 
-    @if (isLoginMode()) {
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <div class="field">
-          <label>Email</label>
-          <input type="email" placeholder="Email address" formControlName="email" />
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <input type="password" placeholder="Password" formControlName="password" />
-        </div>
-
-        <button type="submit" [disabled]="loginForm.invalid || isLoading()">
-          {{ isLoading() ? 'Logging in...' : 'Log In' }}
-        </button>
-      </form>
-    }
-
-    @if (!isLoginMode()) {
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <div class="field">
-          <label>Full Name</label>
-          <input type="text" placeholder="Full Name" formControlName="name" />
-        </div>
-
-        <div class="field">
-          <label>Email Address</label>
-          <input type="email" placeholder="Email Address" formControlName="email" />
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <div class="password-input-wrapper">
-            <input
-              type="password"
-              placeholder="Password"
-              formControlName="password"
-              (input)="updatePasswordStrength($event)"
-            />
-            <span class="password-icon">🔒</span>
+    <!-- Local JWT Authentication -->
+    @if (isLocalAuth()) {
+      @if (isLoginMode()) {
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="Email address" formControlName="email" />
+            @if (getFieldError(loginForm, 'email')) {
+              <span class="field-error">{{ getFieldError(loginForm, 'email') }}</span>
+            }
           </div>
-          <div class="password-strength">
-            <div class="strength-dots">
-              @for (i of [1, 2, 3, 4]; track i) {
-                <span [ngClass]="{ filled: i <= passwordStrength() }"></span>
-              }
+
+          <div class="field">
+            <label>Password</label>
+            <input type="password" placeholder="Password" formControlName="password" />
+            @if (getFieldError(loginForm, 'password')) {
+              <span class="field-error">{{ getFieldError(loginForm, 'password') }}</span>
+            }
+          </div>
+
+          <button type="submit" [disabled]="loginForm.invalid || isLoading()">
+            {{ isLoading() ? 'Logging in...' : 'Log In' }}
+          </button>
+        </form>
+      }
+
+      @if (!isLoginMode()) {
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" placeholder="Full Name" formControlName="name" />
+            @if (getFieldError(registerForm, 'name')) {
+              <span class="field-error">{{ getFieldError(registerForm, 'name') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" placeholder="Email Address" formControlName="email" />
+            @if (getFieldError(registerForm, 'email')) {
+              <span class="field-error">{{ getFieldError(registerForm, 'email') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label>Password</label>
+            <div class="password-input-wrapper">
+              <input
+                type="password"
+                placeholder="Password (min 8 characters)"
+                formControlName="password"
+                (input)="updatePasswordStrength($event)"
+              />
+              <span class="password-icon">🔒</span>
+            </div>
+            @if (getFieldError(registerForm, 'password')) {
+              <span class="field-error">{{ getFieldError(registerForm, 'password') }}</span>
+            }
+            <div class="password-strength">
+              <div class="strength-dots">
+                @for (i of [1, 2, 3, 4]; track i) {
+                  <span [ngClass]="{ filled: i <= passwordStrength() }"></span>
+                }
+              </div>
             </div>
           </div>
-        </div>
 
-        <button type="submit" [disabled]="registerForm.invalid || isLoading()">
-          {{ isLoading() ? 'Creating...' : 'Sign Up' }}
+          <button type="submit" [disabled]="registerForm.invalid || isLoading()">
+            {{ isLoading() ? 'Creating...' : 'Sign Up' }}
+          </button>
+        </form>
+      }
+
+      <div class="auth-footer">
+        <span>
+          @if (isLoginMode()) {
+            Don't have an account?
+          } @else {
+            Already have an account?
+          }
+        </span>
+        <button (click)="toggleMode()">
+          @if (isLoginMode()) {
+            Sign up
+          } @else {
+            Log in
+          }
         </button>
-      </form>
+      </div>
     }
 
-    <div class="auth-footer">
-      <span>
-        {{ isLoginMode() ? 'Don’t have an account?' : 'Already have an account?' }}
-      </span>
-      <button (click)="toggleMode()">
-        {{ isLoginMode() ? 'Sign up' : 'Log in' }}
-      </button>
-    </div>
+    <!-- Azure AD Authentication -->
+    @if (isAzureAuth()) {
+      <div class="azure-login">
+        <p class="azure-description">Sign in with your Microsoft account to continue</p>
+
+        <button (click)="onLogin()" [disabled]="isLoading()" class="btn-microsoft">
+          <svg class="microsoft-icon" width="21" height="21" viewBox="0 0 21 21" fill="none">
+            <rect width="9.75" height="9.75" fill="#F25022" />
+            <rect x="11.25" width="9.75" height="9.75" fill="#7FBA00" />
+            <rect y="11.25" width="9.75" height="9.75" fill="#00A4EF" />
+            <rect x="11.25" y="11.25" width="9.75" height="9.75" fill="#FFB900" />
+          </svg>
+          @if (isLoading()) {
+            <span>Redirecting to Microsoft...</span>
+          } @else {
+            <span>Sign in with Microsoft</span>
+          }
+        </button>
+      </div>
+    }
   </div>
 </div>

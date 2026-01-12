@@ -1,18 +1,73 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  MSAL_GUARD_CONFIG,
+  MSAL_INSTANCE,
+  MSAL_INTERCEPTOR_CONFIG,
+  MsalBroadcastService,
+  MsalGuard,
+  MsalInterceptor,
+  MsalService,
+} from '@azure/msal-angular';
+
 import { routes } from './app.routes';
+import { AppConfigService } from './config/app-config.service';
+import {
+  MSALGuardConfigFactory,
+  MSALInstanceFactory,
+  MSALInterceptorConfigFactory,
+} from './config/msal.config';
 import { authInterceptor } from './identity/interceptors/auth.interceptor';
-import { SocketService } from './services/socket.service';
+import { AuthService } from './identity/services/auth.service';
+
+export function initializeAuth(authService: AuthService, appConfig: AppConfigService) {
+  return (): Promise<boolean> => {
+    if (appConfig.isLocalAuth()) {
+      return authService.restoreSessionFromCookies();
+    }
+
+    return Promise.resolve(true);
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([authInterceptor])),
-    SocketService,
+    provideHttpClient(withInterceptorsFromDi(), withInterceptors([authInterceptor])),
+
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true,
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory,
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: MSALGuardConfigFactory,
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory,
+    },
+    MsalGuard,
+    MsalService,
+    MsalBroadcastService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAuth,
+      deps: [AuthService, AppConfigService],
+      multi: true,
+    },
   ],
 };
